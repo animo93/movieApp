@@ -115,7 +115,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.e(MainActivityFragment.class.getSimpleName(), "in on create view");
         View rootView=inflater.inflate(R.layout.fragment_main, container, false);
-        Log.e(MainActivityFragment.class.getSimpleName(), "in on create view 2");
+        //Log.e(MainActivityFragment.class.getSimpleName(), "in on create view 2");
         String dummyValues[]=new String[]{
                 "A","B","C","D",
                 "E","F","G","H",
