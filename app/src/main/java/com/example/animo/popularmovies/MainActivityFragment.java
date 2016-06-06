@@ -34,6 +34,7 @@ import java.util.zip.Inflater;
  */
 public class MainActivityFragment extends Fragment {
     ImageListAdapter imageListAdapter;
+    GridView gridView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,7 @@ public class MainActivityFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater= (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            GridView gridView;
+            //GridView gridView;
             View view;
             if(convertView==null){
                 //gridView= (GridView) inflater.inflate(R.layout.fragment_main,null);
@@ -89,7 +90,6 @@ public class MainActivityFragment extends Fragment {
                 Picasso
                         .with(context)
                         .load(imageUrls[position])
-                        .fit()
                         .into(imageView);
             }
             else {
@@ -122,10 +122,10 @@ public class MainActivityFragment extends Fragment {
                 "I","J","K","L",
                 "M","N","O","P"
         };
-        imageListAdapter=new ImageListAdapter(getContext(),dummyValues);
-        GridView gridView= (GridView) rootView.findViewById(R.id.gridView);
-        Log.e(MainActivityFragment.class.getSimpleName(),imageListAdapter.imageUrls[0]);
-        gridView.setAdapter(imageListAdapter);
+        //imageListAdapter=new ImageListAdapter(getContext(),dummyValues);
+        gridView= (GridView) rootView.findViewById(R.id.gridView);
+        //Log.e(MainActivityFragment.class.getSimpleName(),imageListAdapter.imageUrls[0]);
+        //gridView.setAdapter(imageListAdapter);
         /*adapter=new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.movie_list,
@@ -148,6 +148,8 @@ public class MainActivityFragment extends Fragment {
             super.onPostExecute(strings);
             Log.e(LOG_TAG, "strings are " + strings[1]);
             imageListAdapter=new ImageListAdapter(getContext(),strings);
+            gridView.setAdapter(imageListAdapter);
+
             imageListAdapter.add(strings);
 
 
