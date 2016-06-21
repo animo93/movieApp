@@ -1,6 +1,7 @@
 package com.example.animo.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -113,29 +115,20 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.e(MainActivityFragment.class.getSimpleName(), "in on create view");
+
         View rootView=inflater.inflate(R.layout.fragment_main, container, false);
-        //Log.e(MainActivityFragment.class.getSimpleName(), "in on create view 2");
-        String dummyValues[]=new String[]{
-                "A","B","C","D",
-                "E","F","G","H",
-                "I","J","K","L",
-                "M","N","O","P"
-        };
-        //imageListAdapter=new ImageListAdapter(getContext(),dummyValues);
         gridView= (GridView) rootView.findViewById(R.id.gridView);
-        //Log.e(MainActivityFragment.class.getSimpleName(),imageListAdapter.imageUrls[0]);
-        //gridView.setAdapter(imageListAdapter);
-        /*adapter=new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.movie_list,
-                R.id.imageView,
-                dummyValues
-        );*/
-        //gridView.setAdapter(new ImageListAdapter(getContext(),));
-
-
-
+        FetchMoviesTask fetchMoviesTask=new FetchMoviesTask();
+        fetchMoviesTask.execute();
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String details= (String) imageListAdapter.getItem(position);
+                Intent intent=new Intent(getActivity(),DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT,details);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
@@ -146,7 +139,6 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(String[] strings) {
             super.onPostExecute(strings);
-            Log.e(LOG_TAG, "strings are " + strings[1]);
             imageListAdapter=new ImageListAdapter(getContext(),strings);
             gridView.setAdapter(imageListAdapter);
 
