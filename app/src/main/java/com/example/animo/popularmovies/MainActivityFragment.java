@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.zip.Inflater;
 
 /**
@@ -37,6 +38,7 @@ import java.util.zip.Inflater;
 public class MainActivityFragment extends Fragment {
     ImageListAdapter imageListAdapter;
     GridView gridView;
+    String []movieIds;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,9 +125,10 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String details= (String) imageListAdapter.getItem(position);
+
+                long details=imageListAdapter.getItemId(position);
                 Intent intent=new Intent(getActivity(),DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT,details);
+                        .putExtra(Intent.EXTRA_TEXT,movieIds[((int) details)]);
                 startActivity(intent);
             }
         });
@@ -152,12 +155,15 @@ public class MainActivityFragment extends Fragment {
             JSONObject movieJson=new JSONObject(movieJsonStr);
             JSONArray movieArray=movieJson.getJSONArray("results");
             String[] results=new String[movieArray.length()];
+            movieIds=new String[movieArray.length()];
+
 
             for(int i=0;i<movieArray.length();i++){
                 String posterUrl;
                 JSONObject movieDetails=movieArray.getJSONObject(i);
                 posterUrl=movieDetails.getString("poster_path");
                 results[i]="http://image.tmdb.org/t/p/w185//"+posterUrl;
+                movieIds[i]=movieDetails.getString("id");
             }
             return results;
 
