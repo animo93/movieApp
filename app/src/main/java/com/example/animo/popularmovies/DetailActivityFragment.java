@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +29,6 @@ import java.net.URL;
  * A placeholder fragment containing a simple view.
  */
 public class DetailActivityFragment extends Fragment {
-    Intent intent;
     TextView titleTextView;
     ImageView imageView;
     TextView dateTextView;
@@ -41,15 +42,17 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.e(DetailActivityFragment.class.getSimpleName(),"inside onCreateView");
         View rootView=inflater.inflate(R.layout.fragment_detail, container, false);
+        Intent intent=getActivity().getIntent();
         titleTextView= (TextView) rootView.findViewById(R.id.movie_title);
         imageView=(ImageView) rootView.findViewById(R.id.movie_image);
         dateTextView= (TextView) rootView.findViewById(R.id.movie_date);
         timeTextView= (TextView) rootView.findViewById(R.id.movie_time);
         ratingTextView= (TextView) rootView.findViewById(R.id.movie_rating);
         overviewTextView= (TextView) rootView.findViewById(R.id.movie_overview);
-
-        //((TextView)rootView.findViewById(R.id.textView)).setText(intent.getStringExtra(Intent.EXTRA_TEXT));
+        DetailViewTask detailViewTask=new DetailViewTask();
+        detailViewTask.execute(intent.getStringExtra(Intent.EXTRA_TEXT));
         return rootView;
     }
     public class DetailViewTask extends AsyncTask<String,Void,Object[]>{
@@ -58,16 +61,21 @@ public class DetailActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(Object[] objects) {
             super.onPostExecute(objects);
-            Log.e(DetailActivity.class.getSimpleName(),"movie name "+objects[0]);
+            Log.e(DetailActivityFragment.class.getSimpleName(), "inside onPostExecute");
+            Log.e(DetailActivity.class.getSimpleName(), "movie name " + objects[0]);
             titleTextView.setText((String) objects[0]);
-            imageView.setImageURI((Uri) objects[1]);
+            Picasso.with(getContext())
+                    .load((String) objects[1])
+                    .fit()
+                    .into(imageView);
             dateTextView.setText((String) objects[2]);
             timeTextView.setText((String) objects[3]);
             ratingTextView.setText((String) objects[4]);
-            //overviewTextView.setText((String[])objects[5]);
+            overviewTextView.setText((CharSequence) objects[5]);
         }
 
         private Object[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
+            Log.e(DetailActivityFragment.class.getSimpleName(),"inside getMovieDataFromJson");
             JSONObject movieJson=new JSONObject(movieJsonStr);
             Object[] objects=new Object[6];
             String movieTitle;
@@ -75,31 +83,20 @@ public class DetailActivityFragment extends Fragment {
             String movieReleaseDate;
             String movieTime;
             String movieRating;
-            String[] movieOverview=new String[movieJson.length()];
+            Object movieOverview;
 
             movieTitle=movieJson.getString("title");
             moviePosterUrl="http://image.tmdb.org/t/p/w185//"+movieJson.getString("backdrop_path");
-            movieReleaseDate=movieJson.getString("release_date");
-            movieTime=movieJson.getString("runtime");
-            movieRating=movieJson.getString("vote_average");
-            movieOverview= (String[]) movieJson.get("overview");
+            movieReleaseDate=movieJson.getString("release_date").substring(0,4);
+            movieTime=movieJson.getString("runtime")+"min";
+            movieRating=movieJson.getString("vote_average")+"/10";
+            movieOverview= movieJson.get("overview");
             objects[0]=movieTitle;
             objects[1]=moviePosterUrl;
             objects[2]=movieReleaseDate;
             objects[3]=movieTime;
             objects[4]=movieRating;
             objects[5]=movieOverview;
-
-
-
-
-            /*for(int i=0;i<movieArray.length();i++){
-                String posterUrl;
-                JSONObject movieDetails=movieArray.getJSONObject(i);
-                posterUrl=movieDetails.getString("poster_path");
-                results[i]="http://image.tmdb.org/t/p/w185//"+posterUrl;
-                movieDetails[i]=movieDetails.getString("id");
-            }*/
             return objects;
 
         }
@@ -107,19 +104,19 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
         protected Object[] doInBackground(String... params) {
-            intent=getActivity().getIntent();
             HttpURLConnection httpURLConnection=null;
             BufferedReader reader=null;
             String appKey="10577495563a92834bd8503886bbcc5a";
             String movieDetailJson=null;
             try {
-                final String BASE_URL = "http://api.themoviedb.org/3/movie/"+intent.getStringExtra(Intent.EXTRA_TEXT)+"?api_key=";
+                final String BASE_URL = "http://api.themoviedb.org/3/movie/"+params[0]+"?api_key=";
                 final String APPID_PARAM = "api_key";
 
                 Uri buildUri = Uri.parse(BASE_URL).buildUpon()
                         .appendQueryParameter(APPID_PARAM, appKey)
                         .build();
                 URL url = new URL(buildUri.toString());
+                Log.e(DetailActivityFragment.class.getSimpleName(),"url is"+url);
 
                 httpURLConnection= (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("GET");

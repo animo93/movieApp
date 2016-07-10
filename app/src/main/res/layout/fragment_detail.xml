@@ -11,9 +11,9 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:id="@+id/movie_title"
-        android:background="#2fa57c"
+        android:background="#0b6462"
         android:paddingLeft="30dp"
-        android:textSize="50dp"
+        android:textSize="40sp"
         android:textColor="#ffffff"
         android:gravity="center_vertical" />
     
@@ -39,16 +39,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/movie_date"
-                android:textSize="40dp" />
+                android:textSize="30sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30dp"
+                android:textSize="20sp"
                 android:id="@+id/movie_time" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="10sp"
                 android:id="@+id/movie_rating" />
 
         </LinearLayout>
@@ -58,7 +58,6 @@
         android:id="@+id/movie_overview"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_margin="8dp"
-        android:text="There are some concepts you will need to implement in this project that are not explicitly covered in the course material. We’ve created these Webcast Videos to supplement your learning. (Note: You need to be in the G+ community to access the webcasts. If you are already a member but are still unable to access them from the links below, try accessing them via Your Nanodegree home page → Resources → Google+ Webcast.)"/>
+        android:layout_margin="8dp" />
 
 </LinearLayout>
