@@ -2,8 +2,11 @@ package com.example.animo.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.prefs.Preferences;
 import java.util.zip.Inflater;
 
 /**
@@ -50,12 +54,6 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id=item.getItemId();
-        if(id==R.id.action_sort){
-            Log.e(MainActivityFragment.class.getSimpleName(),"inside menu");
-            startActivity(new Intent(getActivity(), SettingsActivity.class));
-            return true;
-        }
         return super.onOptionsItemSelected(item);
 
     }
@@ -64,7 +62,6 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Log.e(MainActivity.class.getSimpleName(), "inside oncreate");
 
 
     }
@@ -130,9 +127,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.e(MainActivityFragment.class.getSimpleName(),"inside onStart");
-        /*FetchMoviesTask fetchMoviesTask=new FetchMoviesTask();
-        fetchMoviesTask.execute();*/
     }
 
     @Override
@@ -199,13 +193,17 @@ public class MainActivityFragment extends Fragment {
             String movieJson=null;
 
             try {
-                final String BASE_URL = "http://api.themoviedb.org/3/movie/popular?api_key=";
+                SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(getContext());
+                final String SORT_ORDER=preferences.getString(getString(R.string.sort_order_key), getString(R.string.sort_order_default));
+                //final String SORT_ORDER="popular";
+                final String BASE_URL = "http://api.themoviedb.org/3/movie/"+SORT_ORDER+"?";
                 final String APPID_PARAM = "api_key";
 
                 Uri buildUri = Uri.parse(BASE_URL).buildUpon()
                         .appendQueryParameter(APPID_PARAM, appKey)
                         .build();
                 URL url = new URL(buildUri.toString());
+                Log.e(LOG_TAG,"url is "+url);
 
                 httpURLConnection= (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("GET");
