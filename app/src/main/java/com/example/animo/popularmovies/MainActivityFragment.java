@@ -3,6 +3,8 @@ package com.example.animo.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.Preference;
@@ -46,6 +48,13 @@ public class MainActivityFragment extends Fragment {
     ImageListAdapter imageListAdapter;
     GridView gridView;
     String []movieIds;
+
+    private boolean isNetworkAvailable(){
+        ConnectivityManager connectivityManager=(ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo=connectivityManager.getActiveNetworkInfo();
+        Log.e("inside NetworkAvailable","activeNetworkInfo is "+activeNetworkInfo);
+        return null !=activeNetworkInfo && activeNetworkInfo.isConnected();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -127,6 +136,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.e("inside on start","is network "+isNetworkAvailable());
     }
 
     @Override
@@ -136,20 +146,24 @@ public class MainActivityFragment extends Fragment {
         View rootView=inflater.inflate(R.layout.fragment_main, container, false);
         gridView= (GridView) rootView.findViewById(R.id.gridView);
         FetchMoviesTask fetchMoviesTask=new FetchMoviesTask();
-        fetchMoviesTask.execute();
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.e("inside on createView", "value of isnetworkAvailable " + isNetworkAvailable());
+       // if(isNetworkAvailable()) {
+            fetchMoviesTask.execute();
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                long details=imageListAdapter.getItemId(position);
-                Intent intent=new Intent(getActivity(),DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT,movieIds[((int) details)]);
-                startActivity(intent);
-            }
-        });
+                    long details = imageListAdapter.getItemId(position);
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .putExtra(Intent.EXTRA_TEXT, movieIds[((int) details)]);
+                    startActivity(intent);
+                }
+            });
+       // }
 
         return rootView;
     }
+
 
     public class FetchMoviesTask extends AsyncTask<Void,Void,String[]>{
         private final String LOG_TAG=FetchMoviesTask.class.getSimpleName();
@@ -192,63 +206,71 @@ public class MainActivityFragment extends Fragment {
             String appKey="10577495563a92834bd8503886bbcc5a";
             String movieJson=null;
 
-            try {
-                SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(getContext());
-                final String SORT_ORDER=preferences.getString(getString(R.string.sort_order_key), getString(R.string.sort_order_default));
-                //final String SORT_ORDER="popular";
-                final String BASE_URL = "http://api.themoviedb.org/3/movie/"+SORT_ORDER+"?";
-                final String APPID_PARAM = "api_key";
 
-                Uri buildUri = Uri.parse(BASE_URL).buildUpon()
-                        .appendQueryParameter(APPID_PARAM, appKey)
-                        .build();
-                URL url = new URL(buildUri.toString());
-                Log.e(LOG_TAG,"url is "+url);
+                try {
 
-                httpURLConnection= (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("GET");
-                httpURLConnection.connect();
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                    final String SORT_ORDER = preferences.getString(getString(R.string.sort_order_key), getString(R.string.sort_order_default));
+                    //final String SORT_ORDER="popular";
+                    final String BASE_URL = "http://api.themoviedb.org/3/movie/" + SORT_ORDER + "?";
+                    final String APPID_PARAM = "api_key";
 
-                InputStream inputStream=httpURLConnection.getInputStream();
-                StringBuffer stringBuffer=new StringBuffer();
-                if(inputStream==null)
-                    movieJson=null;
+                    Uri buildUri = Uri.parse(BASE_URL).buildUpon()
+                            .appendQueryParameter(APPID_PARAM, appKey)
+                            .build();
+                    URL url = new URL(buildUri.toString());
+                    Log.e(LOG_TAG, "url is " + url);
 
-                reader=new BufferedReader(new InputStreamReader(inputStream));
+                    httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.connect();
 
-                String line;
-                while ((line=reader.readLine())!=null){
-                    stringBuffer.append(line+"\n");
-                }
-                if(stringBuffer.length()==0)
-                    movieJson=null;
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    StringBuffer stringBuffer = new StringBuffer();
+                    if (inputStream == null)
+                        movieJson = null;
 
-                movieJson=stringBuffer.toString();
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        stringBuffer.append(line + "\n");
+                    }
+                    if (stringBuffer.length() == 0)
+                        movieJson = null;
+
+                    movieJson = stringBuffer.toString();
 
 
-            } catch (IOException e) {
-                Log.e("MainActivityFragment","error",e);
-                movieJson=null;
+                } catch (IOException e) {
+                    Log.e("MainActivityFragment", "error", e);
+                    movieJson = null;
 
-            } finally {
-                if(httpURLConnection!=null)
-                    httpURLConnection.disconnect();
-                if(reader!=null){
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e("MainActivityFragment","error",e);
+                } finally {
+                    if (httpURLConnection != null)
+                        httpURLConnection.disconnect();
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            Log.e("MainActivityFragment", "error", e);
+                        }
                     }
                 }
-            }
-            try{
-                return getMovieDataFromJson(movieJson);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG,e.getMessage(),e);
-                e.printStackTrace();
-            }
+                try {
+                    return getMovieDataFromJson(movieJson);
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                    e.printStackTrace();
+                }
+
 
             return null;
         }
+
+
+
+
+
     }
 }
