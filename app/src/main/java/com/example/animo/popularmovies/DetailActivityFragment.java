@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -35,6 +36,7 @@ public class DetailActivityFragment extends Fragment {
     TextView timeTextView;
     TextView ratingTextView;
     TextView overviewTextView;
+    ScrollView overviewScrollView;
 
     public DetailActivityFragment() {
     }
@@ -50,7 +52,8 @@ public class DetailActivityFragment extends Fragment {
         dateTextView= (TextView) rootView.findViewById(R.id.movie_date);
         timeTextView= (TextView) rootView.findViewById(R.id.movie_time);
         ratingTextView= (TextView) rootView.findViewById(R.id.movie_rating);
-        overviewTextView= (TextView) rootView.findViewById(R.id.movie_overview);
+        overviewScrollView= (ScrollView) rootView.findViewById(R.id.scroll_view);
+        overviewTextView=(TextView) rootView.findViewById(R.id.movie_overview);
         DetailViewTask detailViewTask=new DetailViewTask();
         detailViewTask.execute(intent.getStringExtra(Intent.EXTRA_TEXT));
         return rootView;
@@ -72,6 +75,7 @@ public class DetailActivityFragment extends Fragment {
             timeTextView.setText((String) objects[3]);
             ratingTextView.setText((String) objects[4]);
             overviewTextView.setText((CharSequence) objects[5]);
+
         }
 
         private Object[] getMovieDataFromJson(String movieJsonStr) throws JSONException {

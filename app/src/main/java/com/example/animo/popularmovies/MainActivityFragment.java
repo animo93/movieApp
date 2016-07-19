@@ -136,7 +136,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.e("inside on start","is network "+isNetworkAvailable());
     }
 
     @Override
@@ -147,7 +146,7 @@ public class MainActivityFragment extends Fragment {
         gridView= (GridView) rootView.findViewById(R.id.gridView);
         FetchMoviesTask fetchMoviesTask=new FetchMoviesTask();
         Log.e("inside on createView", "value of isnetworkAvailable " + isNetworkAvailable());
-       // if(isNetworkAvailable()) {
+        if(isNetworkAvailable()) {
             fetchMoviesTask.execute();
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -159,7 +158,7 @@ public class MainActivityFragment extends Fragment {
                     startActivity(intent);
                 }
             });
-       // }
+        }
 
         return rootView;
     }
