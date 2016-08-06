@@ -44,22 +44,26 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.e(DetailActivityFragment.class.getSimpleName(),"inside onCreateView");
-        View rootView=inflater.inflate(R.layout.fragment_detail, container, false);
-        Intent intent=getActivity().getIntent();
-        titleTextView= (TextView) rootView.findViewById(R.id.movie_title);
-        imageView=(ImageView) rootView.findViewById(R.id.movie_image);
-        dateTextView= (TextView) rootView.findViewById(R.id.movie_date);
-        timeTextView= (TextView) rootView.findViewById(R.id.movie_time);
-        ratingTextView= (TextView) rootView.findViewById(R.id.movie_rating);
-        overviewScrollView= (ScrollView) rootView.findViewById(R.id.scroll_view);
-        overviewTextView=(TextView) rootView.findViewById(R.id.movie_overview);
-        DetailViewTask detailViewTask=new DetailViewTask();
-        detailViewTask.execute(intent.getStringExtra(Intent.EXTRA_TEXT));
+        Log.e(DetailActivityFragment.class.getSimpleName(), "inside onCreateView");
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        Intent intent = getActivity().getIntent();
+        titleTextView = (TextView) rootView.findViewById(R.id.movie_title);
+        imageView = (ImageView) rootView.findViewById(R.id.movie_image);
+        dateTextView = (TextView) rootView.findViewById(R.id.movie_date);
+        timeTextView = (TextView) rootView.findViewById(R.id.movie_time);
+        ratingTextView = (TextView) rootView.findViewById(R.id.movie_rating);
+        overviewScrollView = (ScrollView) rootView.findViewById(R.id.scroll_view);
+        overviewTextView = (TextView) rootView.findViewById(R.id.movie_overview);
+        DetailViewTask detailViewTask = new DetailViewTask();
+        MovieData movieData=intent.getParcelableExtra("extra_text");
+        //detailViewTask.execute(intent.getStringExtra(Intent.EXTRA_TEXT));
+        Log.e("DetailActivityFragment","is "+movieData.movieId);
+        detailViewTask.execute(""+movieData.movieId);
         return rootView;
     }
-    public class DetailViewTask extends AsyncTask<String,Void,Object[]>{
-        private final String LOG_TAG=DetailViewTask.class.getSimpleName();
+
+    public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
+        private final String LOG_TAG = DetailViewTask.class.getSimpleName();
 
         @Override
         protected void onPostExecute(Object[] objects) {
@@ -79,9 +83,9 @@ public class DetailActivityFragment extends Fragment {
         }
 
         private Object[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
-            Log.e(DetailActivityFragment.class.getSimpleName(),"inside getMovieDataFromJson");
-            JSONObject movieJson=new JSONObject(movieJsonStr);
-            Object[] objects=new Object[6];
+            Log.e(DetailActivityFragment.class.getSimpleName(), "inside getMovieDataFromJson");
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            Object[] objects = new Object[6];
             String movieTitle;
             String moviePosterUrl;
             String movieReleaseDate;
@@ -89,18 +93,18 @@ public class DetailActivityFragment extends Fragment {
             String movieRating;
             Object movieOverview;
 
-            movieTitle=movieJson.getString("title");
-            moviePosterUrl="http://image.tmdb.org/t/p/w185//"+movieJson.getString("backdrop_path");
-            movieReleaseDate=movieJson.getString("release_date").substring(0,4);
-            movieTime=movieJson.getString("runtime")+"min";
-            movieRating=movieJson.getString("vote_average")+"/10";
-            movieOverview= movieJson.get("overview");
-            objects[0]=movieTitle;
-            objects[1]=moviePosterUrl;
-            objects[2]=movieReleaseDate;
-            objects[3]=movieTime;
-            objects[4]=movieRating;
-            objects[5]=movieOverview;
+            movieTitle = movieJson.getString("title");
+            moviePosterUrl = "http://image.tmdb.org/t/p/w185//" + movieJson.getString("backdrop_path");
+            movieReleaseDate = movieJson.getString("release_date").substring(0, 4);
+            movieTime = movieJson.getString("runtime") + "min";
+            movieRating = movieJson.getString("vote_average") + "/10";
+            movieOverview = movieJson.get("overview");
+            objects[0] = movieTitle;
+            objects[1] = moviePosterUrl;
+            objects[2] = movieReleaseDate;
+            objects[3] = movieTime;
+            objects[4] = movieRating;
+            objects[5] = movieOverview;
             return objects;
 
         }
@@ -108,60 +112,60 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
         protected Object[] doInBackground(String... params) {
-            HttpURLConnection httpURLConnection=null;
-            BufferedReader reader=null;
-            String appKey="10577495563a92834bd8503886bbcc5a";
-            String movieDetailJson=null;
+            HttpURLConnection httpURLConnection = null;
+            BufferedReader reader = null;
+            String appKey = "10577495563a92834bd8503886bbcc5a";
+            String movieDetailJson = null;
             try {
-                final String BASE_URL = "http://api.themoviedb.org/3/movie/"+params[0]+"?api_key=";
+                final String BASE_URL = "http://api.themoviedb.org/3/movie/" + params[0] + "?api_key=";
                 final String APPID_PARAM = "api_key";
 
                 Uri buildUri = Uri.parse(BASE_URL).buildUpon()
                         .appendQueryParameter(APPID_PARAM, appKey)
                         .build();
                 URL url = new URL(buildUri.toString());
-                Log.e(DetailActivityFragment.class.getSimpleName(),"url is"+url);
+                Log.e(DetailActivityFragment.class.getSimpleName(), "url is" + url);
 
-                httpURLConnection= (HttpURLConnection) url.openConnection();
+                httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("GET");
                 httpURLConnection.connect();
 
-                InputStream inputStream=httpURLConnection.getInputStream();
-                StringBuffer stringBuffer=new StringBuffer();
-                if(inputStream==null)
-                    movieDetailJson=null;
+                InputStream inputStream = httpURLConnection.getInputStream();
+                StringBuffer stringBuffer = new StringBuffer();
+                if (inputStream == null)
+                    movieDetailJson = null;
 
-                reader=new BufferedReader(new InputStreamReader(inputStream));
+                reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
-                while ((line=reader.readLine())!=null){
-                    stringBuffer.append(line+"\n");
+                while ((line = reader.readLine()) != null) {
+                    stringBuffer.append(line + "\n");
                 }
-                if(stringBuffer.length()==0)
-                    movieDetailJson=null;
+                if (stringBuffer.length() == 0)
+                    movieDetailJson = null;
 
-                movieDetailJson=stringBuffer.toString();
+                movieDetailJson = stringBuffer.toString();
 
 
             } catch (IOException e) {
                 Log.e("MainActivityFragment", "error", e);
-                movieDetailJson=null;
+                movieDetailJson = null;
 
             } finally {
-                if(httpURLConnection!=null)
+                if (httpURLConnection != null)
                     httpURLConnection.disconnect();
-                if(reader!=null){
+                if (reader != null) {
                     try {
                         reader.close();
                     } catch (IOException e) {
-                        Log.e("MainActivityFragment","error",e);
+                        Log.e("MainActivityFragment", "error", e);
                     }
                 }
             }
-            try{
+            try {
                 return getMovieDataFromJson(movieDetailJson);
             } catch (JSONException e) {
-                Log.e(LOG_TAG,e.getMessage(),e);
+                Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
 

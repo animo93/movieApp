@@ -7,16 +7,16 @@
 
 
     <TextView
+        android:id="@+id/movie_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/movie_title"
         android:background="#0b6462"
+        android:gravity="center_vertical"
         android:paddingLeft="30dp"
-        android:textSize="40sp"
         android:textColor="#ffffff"
-        android:gravity="center_vertical" />
-    
+        android:textSize="40sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -24,49 +24,56 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="0dp"
             android:id="@+id/movie_image"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:layout_weight="1" />
+
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="16dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/movie_date"
-                android:textSize="30sp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:id="@+id/movie_time" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:id="@+id/movie_rating" />
+            android:layout_margin="16dp"
+            android:layout_weight="1">
 
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/movie_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/movie_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/movie_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
         </ScrollView>
     </LinearLayout>
+
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_margin="8dp">
-    <TextView
-        android:layout_width="match_parent"
-        android:id="@+id/movie_overview"
-        android:layout_height="match_parent" />
+        android:layout_margin="8dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/movie_overview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </ScrollView>
 
 </LinearLayout>
