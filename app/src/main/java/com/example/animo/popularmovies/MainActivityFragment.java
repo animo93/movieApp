@@ -78,18 +78,14 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.gridView);
         FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
-        Log.e("inside on createView", "value of isnetworkAvailable " + isNetworkAvailable());
         if (isNetworkAvailable()) {
             fetchMoviesTask.execute();
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    //long details = imageListAdapter.getItemId(position);
-
-                   /* Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra(Intent.EXTRA_TEXT, movieIds[((int) details)]);*/
-                    movieData= new MovieData(imageListAdapter.getItemId(position));
+                    long details = imageListAdapter.getItemId(position);
+                    movieData= new MovieData(movieIds[((int) details)]);
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .putExtra("extra_text", movieData);
                     startActivity(intent);

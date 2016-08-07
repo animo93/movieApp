@@ -7,14 +7,14 @@ import android.os.Parcelable;
  * Created by animo on 3/8/16.
  */
 public class MovieData implements Parcelable {
-    long movieId;
+    String movieId;
 
-    protected MovieData(long in) {
+    protected MovieData(String in) {
         super();
         this.movieId=in;
     }
     protected MovieData(Parcel in){
-        this.movieId=in.readLong();
+        this.movieId=in.readString();
     }
 
     public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {
@@ -36,6 +36,6 @@ public class MovieData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(movieId);
+        dest.writeString(movieId);
     }
 }
