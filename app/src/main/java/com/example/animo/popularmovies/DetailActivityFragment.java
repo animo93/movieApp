@@ -2,7 +2,6 @@ package com.example.animo.popularmovies;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +27,7 @@ import java.net.URL;
  * A placeholder fragment containing a simple view.
  */
 public class DetailActivityFragment extends Fragment {
+    private final String Log_tag=DetailActivityFragment.class.getSimpleName();
     TextView titleTextView;
     ImageView imageView;
     TextView dateTextView;
@@ -54,7 +52,7 @@ public class DetailActivityFragment extends Fragment {
         ratingTextView = (TextView) rootView.findViewById(R.id.movie_rating);
         overviewScrollView = (ScrollView) rootView.findViewById(R.id.scroll_view);
         overviewTextView = (TextView) rootView.findViewById(R.id.movie_overview);
-        DetailViewTask detailViewTask = new DetailViewTask();
+        DetailViewTask detailViewTask = new DetailViewTask(this);
         MovieData movieData=intent.getParcelableExtra("extra_text");
         //detailViewTask.execute(intent.getStringExtra(Intent.EXTRA_TEXT));
         Log.e("DetailActivityFragment","is "+movieData.movieId);
@@ -62,114 +60,81 @@ public class DetailActivityFragment extends Fragment {
         return rootView;
     }
 
-    public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
-        private final String LOG_TAG = DetailViewTask.class.getSimpleName();
+    private String[] getMovieTrailer(String... params){
+        HttpURLConnection httpURLConnection = null;
+        BufferedReader reader = null;
+        String appKey = "10577495563a92834bd8503886bbcc5a";
+        String movieTrailerJson = null;
+        try {
+            final String BASE_URL = "http://api.themoviedb.org/3/movie/" + params[0] + "/videos?api_key=";
+            final String APPID_PARAM = "api_key";
 
-        @Override
-        protected void onPostExecute(Object[] objects) {
-            super.onPostExecute(objects);
-            Log.e(DetailActivityFragment.class.getSimpleName(), "inside onPostExecute");
-            Log.e(DetailActivity.class.getSimpleName(), "movie name " + objects[0]);
-            titleTextView.setText((String) objects[0]);
-            Picasso.with(getContext())
-                    .load((String) objects[1])
-                    .fit()
-                    .into(imageView);
-            dateTextView.setText((String) objects[2]);
-            timeTextView.setText((String) objects[3]);
-            ratingTextView.setText((String) objects[4]);
-            overviewTextView.setText((CharSequence) objects[5]);
+            Uri buildUri = Uri.parse(BASE_URL).buildUpon()
+                    .appendQueryParameter(APPID_PARAM, appKey)
+                    .build();
+            URL url = new URL(buildUri.toString());
+            Log.e(Log_tag, "url is" + url);
 
-        }
+            httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setRequestMethod("GET");
+            httpURLConnection.connect();
 
-        private Object[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
-            Log.e(DetailActivityFragment.class.getSimpleName(), "inside getMovieDataFromJson");
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            Object[] objects = new Object[6];
-            String movieTitle;
-            String moviePosterUrl;
-            String movieReleaseDate;
-            String movieTime;
-            String movieRating;
-            Object movieOverview;
+            InputStream inputStream = httpURLConnection.getInputStream();
+            StringBuffer stringBuffer = new StringBuffer();
+            if (inputStream == null)
+                movieTrailerJson = null;
 
-            movieTitle = movieJson.getString("title");
-            moviePosterUrl = "http://image.tmdb.org/t/p/w185//" + movieJson.getString("backdrop_path");
-            movieReleaseDate = movieJson.getString("release_date").substring(0, 4);
-            movieTime = movieJson.getString("runtime") + "min";
-            movieRating = movieJson.getString("vote_average") + "/10";
-            movieOverview = movieJson.get("overview");
-            objects[0] = movieTitle;
-            objects[1] = moviePosterUrl;
-            objects[2] = movieReleaseDate;
-            objects[3] = movieTime;
-            objects[4] = movieRating;
-            objects[5] = movieOverview;
-            return objects;
+            reader = new BufferedReader(new InputStreamReader(inputStream));
 
-        }
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuffer.append(line + "\n");
+            }
+            if (stringBuffer.length() == 0)
+                movieTrailerJson = null;
+
+            movieTrailerJson = stringBuffer.toString();
 
 
-        @Override
-        protected Object[] doInBackground(String... params) {
-            HttpURLConnection httpURLConnection = null;
-            BufferedReader reader = null;
-            String appKey = "10577495563a92834bd8503886bbcc5a";
-            String movieDetailJson = null;
-            try {
-                final String BASE_URL = "http://api.themoviedb.org/3/movie/" + params[0] + "?api_key=";
-                final String APPID_PARAM = "api_key";
+        } catch (IOException e) {
+            Log.e(Log_tag, "error", e);
+            movieTrailerJson = null;
 
-                Uri buildUri = Uri.parse(BASE_URL).buildUpon()
-                        .appendQueryParameter(APPID_PARAM, appKey)
-                        .build();
-                URL url = new URL(buildUri.toString());
-                Log.e(DetailActivityFragment.class.getSimpleName(), "url is" + url);
-
-                httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("GET");
-                httpURLConnection.connect();
-
-                InputStream inputStream = httpURLConnection.getInputStream();
-                StringBuffer stringBuffer = new StringBuffer();
-                if (inputStream == null)
-                    movieDetailJson = null;
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    stringBuffer.append(line + "\n");
-                }
-                if (stringBuffer.length() == 0)
-                    movieDetailJson = null;
-
-                movieDetailJson = stringBuffer.toString();
-
-
-            } catch (IOException e) {
-                Log.e("MainActivityFragment", "error", e);
-                movieDetailJson = null;
-
-            } finally {
-                if (httpURLConnection != null)
-                    httpURLConnection.disconnect();
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        Log.e("MainActivityFragment", "error", e);
-                    }
+        } finally {
+            if (httpURLConnection != null)
+                httpURLConnection.disconnect();
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(Log_tag, "error", e);
                 }
             }
-            try {
-                return getMovieDataFromJson(movieDetailJson);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-
-            return null;
         }
+        try {
+            return getMovieTrailerFromJson(movieTrailerJson);
+        } catch (Exception e) {
+            Log.e(Log_tag, e.getMessage(), e);
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String[] getMovieTrailerFromJson(String movieDetailJson) throws JSONException {
+        final String trailerBaseUrl="https://www.youtube.com/watch?v=";
+        String[] trailers=new String[]{};
+        JSONObject jsonObject=new JSONObject(movieDetailJson);
+        JSONArray trailerArray=jsonObject.getJSONArray("results");
+        for(int i=0;i<trailerArray.length();i++){
+            JSONObject trailerObject=trailerArray.getJSONObject(i);
+            String key=trailerObject.getString("key");
+            Uri buildUri = Uri.parse(trailerBaseUrl).buildUpon()
+                    .appendQueryParameter("v", key)
+                    .build();
+            String trailerUrl=buildUri.toString();
+            trailers[i]=trailerUrl;
+        }
+        return trailers;
     }
 }

@@ -3,9 +3,12 @@
     <string-array name="pref_example_list_titles">
         <item>Most Popular</item>
         <item>Top Rated</item>
+        <item>Favourite</item>
     </string-array>
     <string-array name="pref_example_list_values">
         <item>popular</item>
         <item>top_rated</item>
+        <item>favourite</item>
     </string-array>
+
 </resources>
