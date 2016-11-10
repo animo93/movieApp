@@ -8,13 +8,17 @@ import android.os.Parcelable;
  */
 public class MovieData implements Parcelable {
     String movieId;
+    String movieName;
 
-    protected MovieData(String in) {
+    protected MovieData(String in,String movieName) {
         super();
         this.movieId=in;
+        this.movieName=movieName;
     }
     protected MovieData(Parcel in){
+
         this.movieId=in.readString();
+        this.movieName=in.readString();
     }
 
     public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {
@@ -37,5 +41,6 @@ public class MovieData implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(movieId);
+        dest.writeString(movieName);
     }
 }

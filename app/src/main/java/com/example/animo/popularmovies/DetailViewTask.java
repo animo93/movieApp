@@ -21,6 +21,7 @@ import java.net.URL;
  */
 public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
     private DetailActivityFragment detailActivityFragment;
+
     private final String LOG_TAG = DetailViewTask.class.getSimpleName();
 
     public DetailViewTask(DetailActivityFragment detailActivityFragment) {
@@ -32,7 +33,8 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
         super.onPostExecute(objects);
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside onPostExecute");
         Log.e(DetailActivity.class.getSimpleName(), "movie name " + objects[0]);
-        detailActivityFragment.titleTextView.setText((String) objects[0]);
+        String title= (String) objects[0];
+        Log.e(LOG_TAG,"Title is "+title);
         Picasso.with(detailActivityFragment.getContext())
                 .load((String) objects[1])
                 .fit()

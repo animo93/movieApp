@@ -61,6 +61,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
         JSONArray movieArray = movieJson.getJSONArray("results");
         String[] results = new String[movieArray.length()];
         mainActivityFragment.movieIds = new String[movieArray.length()];
+        mainActivityFragment.movieNames = new String[movieArray.length()];
 
 
         for (int i = 0; i < movieArray.length(); i++) {
@@ -69,6 +70,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
             posterUrl = movieDetails.getString("poster_path");
             results[i] = "http://image.tmdb.org/t/p/w185//" + posterUrl;
             mainActivityFragment.movieIds[i] = movieDetails.getString("id");
+            mainActivityFragment.movieNames[i] = movieDetails.getString("original_title");
         }
         return results;
 

@@ -31,6 +31,7 @@ public class MainActivityFragment extends Fragment {
     MovieAdapter movieAdapter;
     GridView gridView;
     String[] movieIds;
+    String[] movieNames;
     MovieData movieData;
 
     private static final int MOVIE_LOADER=0;
@@ -95,7 +96,7 @@ public class MainActivityFragment extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     long details = imageListAdapter.getItemId(position);
-                    movieData = new MovieData(movieIds[((int) details)]);
+                    movieData = new MovieData(movieIds[((int) details)],movieNames[(int) details]);
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .putExtra("extra_text", movieData);
                     startActivity(intent);

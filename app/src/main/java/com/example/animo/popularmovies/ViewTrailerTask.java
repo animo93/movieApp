@@ -1,21 +1,11 @@
 package com.example.animo.popularmovies;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.support.v4.widget.NestedScrollView;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,71 +19,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Created by animo on 11/11/16.
  */
-public class DetailActivityFragment extends Fragment {
-    private final String Log_tag=DetailActivityFragment.class.getSimpleName();
-    ImageView imageView;
-    TextView dateTextView;
-    TextView timeTextView;
-    TextView ratingTextView;
-    TextView overviewTextView;
-    ImageView trailerView;
-    String[] trailers;
-    View rootView;
 
+public class ViewTrailerTask extends AsyncTask<String, Void, String[]> {
 
-    public DetailActivityFragment() {
+    private final String Log_tag=ViewTrailerTask.class.getSimpleName();
+
+    private DetailActivityFragment detailActivityFragment;
+
+    public ViewTrailerTask(DetailActivityFragment detailActivityFragment){
+        this.detailActivityFragment=detailActivityFragment;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.e(DetailActivityFragment.class.getSimpleName(), "inside onCreateView");
-        rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        Intent intent = getActivity().getIntent();
-
-        imageView = (ImageView) rootView.findViewById(R.id.movie_image);
-        dateTextView = (TextView) rootView.findViewById(R.id.movie_date);
-        timeTextView = (TextView) rootView.findViewById(R.id.movie_time);
-        ratingTextView = (TextView) rootView.findViewById(R.id.movie_rating);
-        overviewTextView = (TextView) rootView.findViewById(R.id.movie_overview);
-        trailerView = (ImageView) rootView.findViewById(R.id.trailers);
-
-
-        DetailViewTask detailViewTask = new DetailViewTask(this);
-        MovieData movieData=intent.getParcelableExtra("extra_text");
-        //detailViewTask.execute(intent.getStringExtra(Intent.EXTRA_TEXT));
-        Log.e("DetailActivityFragment","is "+movieData.movieId);
-
-        detailViewTask.execute(""+movieData.movieId);
-        //String[] trailers=getMovieTrailer(movieData.movieId);
-        ViewTrailerTask viewTrailerTask=new ViewTrailerTask(this);
-        viewTrailerTask.execute(""+movieData.movieId);
-        /*for(final String trailer:trailers){
-            View movieTrailer= LayoutInflater.from(getActivity()).inflate(
-                    R.layout.trailer_item,null
-            );
-            movieTrailer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    playYouTubeTrailerIntent(trailer);
-                }
-            });
-
-        }*/
-        return rootView;
-    }
-
-    private void playYouTubeTrailerIntent(String trailer) {
-        Intent trailerPlay=new Intent(Intent.ACTION_VIEW);
-        trailerPlay.setDataAndType(Uri.parse(trailer),"video/*");
-        startActivity(trailerPlay);
-    }
-
-
-    private String[] getMovieTrailer(String... params){
+    protected String[] doInBackground(String... params) {
         HttpURLConnection httpURLConnection = null;
         BufferedReader reader = null;
         String appKey = "10577495563a92834bd8503886bbcc5a";
@@ -155,19 +95,49 @@ public class DetailActivityFragment extends Fragment {
     }
 
     private String[] getMovieTrailerFromJson(String movieDetailJson) throws JSONException {
+        Log.e(Log_tag,movieDetailJson);
         final String trailerBaseUrl="https://www.youtube.com/watch?v=";
-        String[] trailers=new String[]{};
+
         JSONObject jsonObject=new JSONObject(movieDetailJson);
         JSONArray trailerArray=jsonObject.getJSONArray("results");
+        String[] trailers=new String[trailerArray.length()];
+        Log.e(Log_tag,""+trailerArray.length());
         for(int i=0;i<trailerArray.length();i++){
             JSONObject trailerObject=trailerArray.getJSONObject(i);
             String key=trailerObject.getString("key");
             Uri buildUri = Uri.parse(trailerBaseUrl).buildUpon()
                     .appendQueryParameter("v", key)
                     .build();
+
             String trailerUrl=buildUri.toString();
+            Log.e(Log_tag,trailerUrl);
             trailers[i]=trailerUrl;
         }
         return trailers;
+    }
+
+    @Override
+    protected void onPostExecute(String[] strings) {
+        super.onPostExecute(strings);
+        detailActivityFragment.trailers=strings;
+        for(final String trailer:strings){
+            View movieTrailer= LayoutInflater.from(detailActivityFragment.getContext()).inflate(
+                    R.layout.trailer_item,null
+            );
+            movieTrailer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    playYouTubeTrailerIntent(trailer);
+                }
+            });
+
+        }
+
+    }
+
+    private void playYouTubeTrailerIntent(String trailer) {
+        Intent trailerPlay=new Intent(Intent.ACTION_VIEW);
+        trailerPlay.setDataAndType(Uri.parse(trailer),"video/*");
+        detailActivityFragment.startActivity(trailerPlay);
     }
 }
