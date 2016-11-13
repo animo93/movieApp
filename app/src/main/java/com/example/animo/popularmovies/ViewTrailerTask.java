@@ -130,6 +130,7 @@ public class ViewTrailerTask extends AsyncTask<String, Void, String[]> {
                     playYouTubeTrailerIntent(trailer);
                 }
             });
+            detailActivityFragment.container.addView(movieTrailer);
 
         }
 

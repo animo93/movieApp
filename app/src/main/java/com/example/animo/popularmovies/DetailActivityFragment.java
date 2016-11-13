@@ -41,6 +41,7 @@ public class DetailActivityFragment extends Fragment {
     ImageView trailerView;
     String[] trailers;
     View rootView;
+    ViewGroup container;
 
 
     public DetailActivityFragment() {
@@ -53,6 +54,7 @@ public class DetailActivityFragment extends Fragment {
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside onCreateView");
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         Intent intent = getActivity().getIntent();
+        this.container=container;
 
         imageView = (ImageView) rootView.findViewById(R.id.movie_image);
         dateTextView = (TextView) rootView.findViewById(R.id.movie_date);
@@ -60,7 +62,6 @@ public class DetailActivityFragment extends Fragment {
         ratingTextView = (TextView) rootView.findViewById(R.id.movie_rating);
         overviewTextView = (TextView) rootView.findViewById(R.id.movie_overview);
         trailerView = (ImageView) rootView.findViewById(R.id.trailers);
-
 
         DetailViewTask detailViewTask = new DetailViewTask(this);
         MovieData movieData=intent.getParcelableExtra("extra_text");
@@ -71,7 +72,7 @@ public class DetailActivityFragment extends Fragment {
         //String[] trailers=getMovieTrailer(movieData.movieId);
         ViewTrailerTask viewTrailerTask=new ViewTrailerTask(this);
         viewTrailerTask.execute(""+movieData.movieId);
-        /*for(final String trailer:trailers){
+     /*   for(final String trailer:trailers){
             View movieTrailer= LayoutInflater.from(getActivity()).inflate(
                     R.layout.trailer_item,null
             );
@@ -81,6 +82,7 @@ public class DetailActivityFragment extends Fragment {
                     playYouTubeTrailerIntent(trailer);
                 }
             });
+            container.addView(movieTrailer);
 
         }*/
         return rootView;
