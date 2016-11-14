@@ -26,7 +26,6 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         MovieData movieData=intent.getParcelableExtra("extra_text");
         Log.e("DetailActivity","Name is "+movieData.movieName);
-        //getSupportActionBar().setTitle(movieData.movieName);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
         collapsingToolbarLayout.setTitle(movieData.movieName);

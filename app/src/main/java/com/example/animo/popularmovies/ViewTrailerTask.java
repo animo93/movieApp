@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,10 +122,17 @@ public class ViewTrailerTask extends AsyncTask<String, Void, String[]> {
     protected void onPostExecute(String[] strings) {
         super.onPostExecute(strings);
         detailActivityFragment.trailers=strings;
+        //this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
+        int counter=1;
         for(final String trailer:strings){
             View movieTrailer= LayoutInflater.from(detailActivityFragment.getContext()).inflate(
                     R.layout.trailer_item,null
             );
+
+            TextView trailerTitle= (TextView) movieTrailer.findViewById(R.id.trailer_title);
+
+            trailerTitle.setText("Trailer "+counter);
+            counter++;
             movieTrailer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -132,13 +141,14 @@ public class ViewTrailerTask extends AsyncTask<String, Void, String[]> {
             });
             detailActivityFragment.container.addView(movieTrailer);
 
+
         }
 
     }
 
     private void playYouTubeTrailerIntent(String trailer) {
-        Intent trailerPlay=new Intent(Intent.ACTION_VIEW);
-        trailerPlay.setDataAndType(Uri.parse(trailer),"video/*");
+        Intent trailerPlay=new Intent(Intent.ACTION_VIEW,Uri.parse(trailer));
+        //trailerPlay.setDataAndType(Uri.parse(trailer),"video/*");
         detailActivityFragment.startActivity(trailerPlay);
     }
 }

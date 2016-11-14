@@ -20,7 +20,7 @@
         android:layout_marginStart="109dp"
         android:layout_marginBottom="32dp"
         android:id="@+id/trailer_title"
-        android:textAppearance="@style/TextAppearance.Movies.Title.Expanded" />
+        />
 
 
 </RelativeLayout>

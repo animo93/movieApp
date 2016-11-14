@@ -42,6 +42,7 @@ public class DetailActivityFragment extends Fragment {
     String[] trailers;
     View rootView;
     ViewGroup container;
+    TextView trailerTitle;
 
 
     public DetailActivityFragment() {
@@ -54,122 +55,26 @@ public class DetailActivityFragment extends Fragment {
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside onCreateView");
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         Intent intent = getActivity().getIntent();
-        this.container=container;
+        this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
 
         imageView = (ImageView) rootView.findViewById(R.id.movie_image);
         dateTextView = (TextView) rootView.findViewById(R.id.movie_date);
         timeTextView = (TextView) rootView.findViewById(R.id.movie_time);
         ratingTextView = (TextView) rootView.findViewById(R.id.movie_rating);
         overviewTextView = (TextView) rootView.findViewById(R.id.movie_overview);
-        trailerView = (ImageView) rootView.findViewById(R.id.trailers);
+
 
         DetailViewTask detailViewTask = new DetailViewTask(this);
         MovieData movieData=intent.getParcelableExtra("extra_text");
-        //detailViewTask.execute(intent.getStringExtra(Intent.EXTRA_TEXT));
+
         Log.e("DetailActivityFragment","is "+movieData.movieId);
 
         detailViewTask.execute(""+movieData.movieId);
-        //String[] trailers=getMovieTrailer(movieData.movieId);
+
         ViewTrailerTask viewTrailerTask=new ViewTrailerTask(this);
         viewTrailerTask.execute(""+movieData.movieId);
-     /*   for(final String trailer:trailers){
-            View movieTrailer= LayoutInflater.from(getActivity()).inflate(
-                    R.layout.trailer_item,null
-            );
-            movieTrailer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    playYouTubeTrailerIntent(trailer);
-                }
-            });
-            container.addView(movieTrailer);
 
-        }*/
         return rootView;
     }
 
-    private void playYouTubeTrailerIntent(String trailer) {
-        Intent trailerPlay=new Intent(Intent.ACTION_VIEW);
-        trailerPlay.setDataAndType(Uri.parse(trailer),"video/*");
-        startActivity(trailerPlay);
-    }
-
-
-    private String[] getMovieTrailer(String... params){
-        HttpURLConnection httpURLConnection = null;
-        BufferedReader reader = null;
-        String appKey = "10577495563a92834bd8503886bbcc5a";
-        String movieTrailerJson = null;
-        try {
-            final String BASE_URL = "http://api.themoviedb.org/3/movie/" + params[0] + "/videos?api_key=";
-            final String APPID_PARAM = "api_key";
-
-            Uri buildUri = Uri.parse(BASE_URL).buildUpon()
-                    .appendQueryParameter(APPID_PARAM, appKey)
-                    .build();
-            URL url = new URL(buildUri.toString());
-            Log.e(Log_tag, "url is" + url);
-
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.connect();
-
-            InputStream inputStream = httpURLConnection.getInputStream();
-            StringBuffer stringBuffer = new StringBuffer();
-            if (inputStream == null)
-                movieTrailerJson = null;
-
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuffer.append(line + "\n");
-            }
-            if (stringBuffer.length() == 0)
-                movieTrailerJson = null;
-
-            movieTrailerJson = stringBuffer.toString();
-
-
-        } catch (IOException e) {
-            Log.e(Log_tag, "error", e);
-            movieTrailerJson = null;
-
-        } finally {
-            if (httpURLConnection != null)
-                httpURLConnection.disconnect();
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    Log.e(Log_tag, "error", e);
-                }
-            }
-        }
-        try {
-            return getMovieTrailerFromJson(movieTrailerJson);
-        } catch (Exception e) {
-            Log.e(Log_tag, e.getMessage(), e);
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private String[] getMovieTrailerFromJson(String movieDetailJson) throws JSONException {
-        final String trailerBaseUrl="https://www.youtube.com/watch?v=";
-        String[] trailers=new String[]{};
-        JSONObject jsonObject=new JSONObject(movieDetailJson);
-        JSONArray trailerArray=jsonObject.getJSONArray("results");
-        for(int i=0;i<trailerArray.length();i++){
-            JSONObject trailerObject=trailerArray.getJSONObject(i);
-            String key=trailerObject.getString("key");
-            Uri buildUri = Uri.parse(trailerBaseUrl).buildUpon()
-                    .appendQueryParameter("v", key)
-                    .build();
-            String trailerUrl=buildUri.toString();
-            trailers[i]=trailerUrl;
-        }
-        return trailers;
-    }
 }
