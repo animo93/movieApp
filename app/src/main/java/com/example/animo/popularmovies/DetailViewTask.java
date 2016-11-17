@@ -1,26 +1,42 @@
 package com.example.animo.popularmovies;
 
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.View;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.jar.Manifest;
 
 /**
  * Created by animo on 25/10/16.
  */
 public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
+    private static final int REQUEST_EXTERNAL_STORAGE=1;
+    private static String[] PERMISSIONS_STORAGE={
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
     private DetailActivityFragment detailActivityFragment;
+    private File file;
 
     private final String LOG_TAG = DetailViewTask.class.getSimpleName();
 
@@ -29,12 +45,12 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
     }
 
     @Override
-    protected void onPostExecute(Object[] objects) {
+    protected void onPostExecute(final Object[] objects) {
         super.onPostExecute(objects);
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside onPostExecute");
         Log.e(DetailActivity.class.getSimpleName(), "movie name " + objects[0]);
-        String title= (String) objects[0];
-        Log.e(LOG_TAG,"Title is "+title);
+        String title = (String) objects[0];
+        Log.e(LOG_TAG, "Title is " + title);
         Picasso.with(detailActivityFragment.getContext())
                 .load((String) objects[1])
                 .fit()
@@ -43,6 +59,16 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
         detailActivityFragment.timeTextView.setText((String) objects[3]);
         detailActivityFragment.ratingTextView.setText((String) objects[4]);
         detailActivityFragment.overviewTextView.setText((CharSequence) objects[5]);
+        detailActivityFragment.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Picasso.with(detailActivityFragment.getContext())
+                        .load((String) objects[1])
+                        .into(target((String) objects[0]));
+            }
+        });
+
+        //Log.e(LOG_TAG, "File path hela" + file.getAbsolutePath());
 
     }
 
@@ -136,4 +162,50 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
         return null;
     }
 
+    private Target target(final String imageName) {
+        verifyStoragePermissions(detailActivityFragment.getActivity());
+        return new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        file = new File(
+                                Environment.getExternalStorageDirectory().getPath()
+                                        + "/" + imageName + ".jpg");
+                        try {
+                            file.createNewFile();
+                            FileOutputStream fileOutputStream = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                            fileOutputStream.close();
+                            Log.e(LOG_TAG, "File path is" + file.getAbsolutePath());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+
+    }
+
+    private void verifyStoragePermissions(Activity activity) {
+        int permission= ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if(permission != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE);
+        }
+    }
 }

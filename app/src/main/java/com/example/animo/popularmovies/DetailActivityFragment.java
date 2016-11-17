@@ -13,9 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.example.animo.popularmovies.data.MoviesProvider;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,11 +42,10 @@ public class DetailActivityFragment extends Fragment {
     TextView timeTextView;
     TextView ratingTextView;
     TextView overviewTextView;
-    ImageView trailerView;
     String[] trailers;
     View rootView;
     ViewGroup container;
-    TextView trailerTitle;
+    Button button;
 
 
     public DetailActivityFragment() {
@@ -62,6 +65,8 @@ public class DetailActivityFragment extends Fragment {
         timeTextView = (TextView) rootView.findViewById(R.id.movie_time);
         ratingTextView = (TextView) rootView.findViewById(R.id.movie_rating);
         overviewTextView = (TextView) rootView.findViewById(R.id.movie_overview);
+        button= (Button) rootView.findViewById(R.id.favorite);
+
 
 
         DetailViewTask detailViewTask = new DetailViewTask(this);
