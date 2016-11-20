@@ -1,6 +1,7 @@
 package com.example.animo.popularmovies;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -192,22 +193,26 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        file = new File(
-                                Environment.getExternalStorageDirectory().getPath()
-                                        + "/" + imageName + ".jpg");
-                        try {
-                            file.createNewFile();
-                            FileOutputStream fileOutputStream = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                            fileOutputStream.close();
-                            Log.e(LOG_TAG, "File path is" + file.getAbsolutePath());
-                            Message message=handler.obtainMessage(TASK_COMPLETE,file.getAbsolutePath());
-                            message.sendToTarget();
+                        if(isExternalStorageWritable()){
+                            /*file = new File(
+                                    Environment.getExternalStorageDirectory().getPath()
+                                            + "/" + imageName + ".jpg");*/
+                            file=getAlbumStorageDir(detailActivityFragment.getContext(),"movieApp");
+                            try {
+                                file.createNewFile();
+                                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                                fileOutputStream.close();
+                                Log.e(LOG_TAG, "File path is" + file.getAbsolutePath());
+                                Message message=handler.obtainMessage(TASK_COMPLETE,file.getAbsolutePath());
+                                message.sendToTarget();
 
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
+
                     }
                 }).start();
             }
@@ -234,6 +239,35 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                     REQUEST_EXTERNAL_STORAGE);
         }
     }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public File getAlbumStorageDir(Context context, String albumName) {
+        // Get the directory for the app's private pictures directory.
+        File file = new File(context.getExternalFilesDir(
+                Environment.DIRECTORY_PICTURES), albumName);
+        if (!file.mkdirs()) {
+            Log.e(LOG_TAG, "Directory not created");
+        }
+        return file;
+    }
+
+
 
 
 }
