@@ -7,6 +7,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -37,12 +40,16 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
     };
     private DetailActivityFragment detailActivityFragment;
     private File file;
+    private String filePath;
+    private Handler handler;
 
     private final String LOG_TAG = DetailViewTask.class.getSimpleName();
+    private final int TASK_COMPLETE=0;
 
     public DetailViewTask(DetailActivityFragment detailActivityFragment) {
         this.detailActivityFragment = detailActivityFragment;
     }
+
 
     @Override
     protected void onPostExecute(final Object[] objects) {
@@ -65,10 +72,25 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                 Picasso.with(detailActivityFragment.getContext())
                         .load((String) objects[1])
                         .into(target((String) objects[0]));
+                handler = new Handler(Looper.getMainLooper()) {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        Log.d(LOG_TAG, String.format("Message", msg));
+                        switch (msg.what) {
+                            case TASK_COMPLETE:
+                                String path = (String) msg.obj;
+                                Log.d(LOG_TAG,"The File path is "+path);
+                                filePath = path;
+                                break;
+                            default:
+                                super.handleMessage(msg);
+
+                        }
+
+                    }
+                };
             }
         });
-
-        //Log.e(LOG_TAG, "File path hela" + file.getAbsolutePath());
 
     }
 
@@ -179,6 +201,10 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                             fileOutputStream.close();
                             Log.e(LOG_TAG, "File path is" + file.getAbsolutePath());
+                            Message message=handler.obtainMessage(TASK_COMPLETE,file.getAbsolutePath());
+                            message.sendToTarget();
+
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -208,4 +234,6 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                     REQUEST_EXTERNAL_STORAGE);
         }
     }
+
+
 }
