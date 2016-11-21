@@ -1,6 +1,7 @@
 package com.example.animo.popularmovies;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,9 +13,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.os.EnvironmentCompat;
 import android.util.Log;
 import android.view.View;
 
+import com.example.animo.popularmovies.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -29,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Random;
 import java.util.jar.Manifest;
 
 /**
@@ -90,10 +94,25 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
 
                     }
                 };
+               ContentValues movieValues=new ContentValues();
+                movieValues.put(MoviesContract.FavMovies.COLUMN_TITLE, (String) objects[0]);
+                movieValues.put(MoviesContract.FavMovies.COLUMN_DATE, (String) objects[2]);
+                movieValues.put(MoviesContract.FavMovies.COLUMN_OVERVIEW, (String) objects[5]);
+                movieValues.put(MoviesContract.FavMovies.COLUMN_RATING, (String) objects[4]);
+                movieValues.put(MoviesContract.FavMovies.COLUMN_TIME, (String) objects[3]);
+                movieValues.put(MoviesContract.FavMovies.COLUMN_POSTER_PATH,filePath);
+
+                detailActivityFragment.getContext().getContentResolver().insert(MoviesContract.FavMovies.buildMoviePath(
+                        ((String) objects[0]).trim()),
+                        movieValues);
+
             }
+
+
         });
 
     }
+
 
     private Object[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside getMovieDataFromJson");
@@ -197,7 +216,7 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                             /*file = new File(
                                     Environment.getExternalStorageDirectory().getPath()
                                             + "/" + imageName + ".jpg");*/
-                            file=getAlbumStorageDir(detailActivityFragment.getContext(),"movieApp");
+                            file=getAlbumStorageDir(detailActivityFragment.getContext(),imageName);
                             try {
                                 file.createNewFile();
                                 FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -257,13 +276,17 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
         return false;
     }
 
-    public File getAlbumStorageDir(Context context, String albumName) {
-        // Get the directory for the app's private pictures directory.
-        File file = new File(context.getExternalFilesDir(
-                Environment.DIRECTORY_PICTURES), albumName);
-        if (!file.mkdirs()) {
-            Log.e(LOG_TAG, "Directory not created");
-        }
+    public File getAlbumStorageDir(Context context, String imageName) {
+        String root=context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString();
+        File myDir=new File(root+"/saved_images");
+        myDir.mkdirs();
+        Random generator=new Random();
+        int n=10000;
+        n=generator.nextInt(n);
+        String fname="Image-"+n+".jpg";
+        File file=new File(myDir,fname);
+        if(file.exists())
+            file.delete();
         return file;
     }
 
