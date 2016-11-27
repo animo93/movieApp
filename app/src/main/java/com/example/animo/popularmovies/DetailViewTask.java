@@ -86,6 +86,16 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                                 String path = (String) msg.obj;
                                 Log.d(LOG_TAG,"The File path is "+path);
                                 filePath = path;
+                                ContentValues movieValues=new ContentValues();
+                                movieValues.put(MoviesContract.FavMovies.COLUMN_TITLE, (String) objects[0]);
+                                movieValues.put(MoviesContract.FavMovies.COLUMN_DATE, (String) objects[2]);
+                                movieValues.put(MoviesContract.FavMovies.COLUMN_OVERVIEW, (String) objects[5]);
+                                movieValues.put(MoviesContract.FavMovies.COLUMN_RATING, (String) objects[4]);
+                                movieValues.put(MoviesContract.FavMovies.COLUMN_TIME, (String) objects[3]);
+                                movieValues.put(MoviesContract.FavMovies.COLUMN_POSTER_PATH,filePath);
+
+                                detailActivityFragment.getContext().getContentResolver().insert(MoviesContract.FavMovies.CONTENT_URI,
+                                        movieValues);
                                 break;
                             default:
                                 super.handleMessage(msg);
@@ -94,7 +104,7 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
 
                     }
                 };
-               ContentValues movieValues=new ContentValues();
+              /* ContentValues movieValues=new ContentValues();
                 movieValues.put(MoviesContract.FavMovies.COLUMN_TITLE, (String) objects[0]);
                 movieValues.put(MoviesContract.FavMovies.COLUMN_DATE, (String) objects[2]);
                 movieValues.put(MoviesContract.FavMovies.COLUMN_OVERVIEW, (String) objects[5]);
@@ -102,9 +112,8 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                 movieValues.put(MoviesContract.FavMovies.COLUMN_TIME, (String) objects[3]);
                 movieValues.put(MoviesContract.FavMovies.COLUMN_POSTER_PATH,filePath);
 
-                detailActivityFragment.getContext().getContentResolver().insert(MoviesContract.FavMovies.buildMoviePath(
-                        ((String) objects[0]).trim()),
-                        movieValues);
+                detailActivityFragment.getContext().getContentResolver().insert(MoviesContract.FavMovies.CONTENT_URI,
+                        movieValues);*/
 
             }
 

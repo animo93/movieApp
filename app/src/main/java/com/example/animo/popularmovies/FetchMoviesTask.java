@@ -84,8 +84,8 @@ public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
         }
 
         String SORT_ORDER=params[0];
-        if(SORT_ORDER.equals("favourite")){
-            Cursor cursor=mContext.getContentResolver().query(MoviesContract.FavMovies.CONTENT_URI,
+        /*if(SORT_ORDER.equals("favourite")){
+            Cursor cursor=mainActivityFragment.getContext().getContentResolver().query(MoviesContract.FavMovies.CONTENT_URI,
                     new String[]{MoviesContract.FavMovies.COLUMN_POSTER_PATH},
                     null,
                     null,
@@ -93,7 +93,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
             movieAdapter=new MovieAdapter(mContext,cursor,0);
             return null;
 
-        }
+        }*/
         HttpURLConnection httpURLConnection = null;
         BufferedReader reader = null;
         String appKey = "10577495563a92834bd8503886bbcc5a";

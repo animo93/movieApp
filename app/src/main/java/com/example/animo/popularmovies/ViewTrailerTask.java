@@ -122,7 +122,6 @@ public class ViewTrailerTask extends AsyncTask<String, Void, String[]> {
     protected void onPostExecute(String[] strings) {
         super.onPostExecute(strings);
         detailActivityFragment.trailers=strings;
-        //this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
         int counter=1;
         for(final String trailer:strings){
             View movieTrailer= LayoutInflater.from(detailActivityFragment.getContext()).inflate(
@@ -148,7 +147,6 @@ public class ViewTrailerTask extends AsyncTask<String, Void, String[]> {
 
     private void playYouTubeTrailerIntent(String trailer) {
         Intent trailerPlay=new Intent(Intent.ACTION_VIEW,Uri.parse(trailer));
-        //trailerPlay.setDataAndType(Uri.parse(trailer),"video/*");
         detailActivityFragment.startActivity(trailerPlay);
     }
 }
