@@ -21,17 +21,31 @@ public class MovieAdapter extends CursorAdapter{
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view= LayoutInflater.from(context).inflate(R.layout.fragment_main,parent,false);
+        View view= LayoutInflater.from(context).inflate(R.layout.movie_list,parent,false);
+
+        ViewHolder viewHolder=new ViewHolder(view);
+        view.setTag(viewHolder);
+
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ImageView imageView= (ImageView) view.findViewById(R.id.imageView);
+        //ImageView imageView= (ImageView) view.findViewById(R.id.imageView);
+        ViewHolder viewHolder= (ViewHolder) view.getTag();
         Picasso.with(context)
                 .load(cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_PATH))
-                .into(imageView);
+                .into(viewHolder.imageView);
 
+
+    }
+
+    public static class ViewHolder {
+        public final ImageView imageView;
+
+        public ViewHolder(View view){
+            imageView= (ImageView) view.findViewById(R.id.imageView);
+        }
 
     }
 }

@@ -39,13 +39,18 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     private static final int MOVIE_LOADER=0;
 
+    private static final String[] MOVIE_COLUMNS = {
+            MoviesContract.FavMovies.TABLE_NAME+ "." + MoviesContract.FavMovies._ID,
+            MoviesContract.FavMovies.COLUMN_POSTER_PATH
+    };
+
     static final int COL_MOVIE_ID=0;
     static final int COL_MOVIE_TITLE=1;
     static final int COL_MOVIE_DATE=2;
     static final int COL_MOVIE_TIME=3;
     static final int COL_MOVIE_RATING=4;
     static final int COL_MOVIE_OVERVIEW=5;
-    static final int COL_MOVIE_POSTER_PATH=6;
+    static final int COL_MOVIE_POSTER_PATH=1;
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -158,7 +163,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
            // movieAdapter=new MovieAdapter(mContext,cursor,0);*/
             return new CursorLoader(getActivity(),
                     MoviesContract.FavMovies.CONTENT_URI,
-                    new String[]{MoviesContract.FavMovies.COLUMN_POSTER_PATH},
+                    MOVIE_COLUMNS,
                     null,
                     null,
                     null);
