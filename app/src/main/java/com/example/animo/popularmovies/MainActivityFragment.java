@@ -41,16 +41,19 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     private static final String[] MOVIE_COLUMNS = {
             MoviesContract.FavMovies.TABLE_NAME+ "." + MoviesContract.FavMovies._ID,
-            MoviesContract.FavMovies.COLUMN_POSTER_PATH
+            MoviesContract.FavMovies.COLUMN_TITLE ,
+            MoviesContract.FavMovies.COLUMN_POSTER_PATH,
+            MoviesContract.FavMovies.COLUMN_MOVIE_ID
     };
 
-    static final int COL_MOVIE_ID=0;
+    static final int COL_ID=0;
     static final int COL_MOVIE_TITLE=1;
-    static final int COL_MOVIE_DATE=2;
-    static final int COL_MOVIE_TIME=3;
-    static final int COL_MOVIE_RATING=4;
-    static final int COL_MOVIE_OVERVIEW=5;
-    static final int COL_MOVIE_POSTER_PATH=1;
+    static final int COL_MOVIE_POSTER_PATH=2;
+    static final int COL_MOVIE_ID=3;
+
+    public interface Callback {
+        public void onItemSelected(String movieId,String movieTitle);
+    }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -61,6 +64,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
+        if(preferredSortOrder.equals("favourite")){
+            getLoaderManager().initLoader(MOVIE_LOADER,null,this);
+        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -91,26 +98,37 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onResume() {
         FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(this);
         if (isNetworkAvailable()) {
-            String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
+            final String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
             Log.v("inside onResume ","preferedSortOrder is "+preferredSortOrder);
             if(preferredSortOrder.equals("favourite")){
-                getLoaderManager().initLoader(MOVIE_LOADER,null,this);
+                Log.e(LOG_TAG,"inside if "+preferredSortOrder);
+                getLoaderManager().restartLoader(MOVIE_LOADER,null,this);
                 movieAdapter=new MovieAdapter(getActivity(),null,0);
                 gridView.setAdapter(movieAdapter);
             }
             else {
-                fetchMoviesTask.execute(Utility.getPreferredSortOrder(getActivity()));
+                fetchMoviesTask.execute(preferredSortOrder);
             }
 
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(preferredSortOrder.equals("favourite")){
+                        Cursor cursor= (Cursor) parent.getItemAtPosition(position);
+                        if(cursor!=null){
+                            ((Callback)getActivity())
+                                    .onItemSelected(cursor
+                                    .getString(COL_MOVIE_ID),cursor.getString(COL_MOVIE_TITLE));
+                        }
+                    } else {
+                        long details = imageListAdapter.getItemId(position);
+                        movieData = new MovieData(movieIds[((int) details)],movieNames[(int) details]);
+                        Intent intent = new Intent(getActivity(), DetailActivity.class)
+                                .putExtra("extra_text", movieData);
+                        startActivity(intent);
+                    }
 
-                    long details = imageListAdapter.getItemId(position);
-                    movieData = new MovieData(movieIds[((int) details)],movieNames[(int) details]);
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra("extra_text", movieData);
-                    startActivity(intent);
+
                 }
             });
         }
@@ -128,25 +146,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.gridView);
-        /*FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(this);
-        if (isNetworkAvailable()) {
-            String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
-            Log.v("inside onCreateView ","preferedSortOrder is "+preferredSortOrder);
-            fetchMoviesTask.execute(Utility.getPreferredSortOrder(getActivity()));
-            //movieAdapter=new MovieAdapter(getActivity(),null,0);
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    long details = imageListAdapter.getItemId(position);
-                    movieData = new MovieData(movieIds[((int) details)],movieNames[(int) details]);
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra("extra_text", movieData);
-                    startActivity(intent);
-                }
-            });
-        }*/
-
         return rootView;
     }
 
@@ -155,12 +154,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
         Log.e(LOG_TAG,"inside onCreateLoader and preferredSortOrder "+preferredSortOrder);
         if(preferredSortOrder.equals("favourite")){
-            /*Cursor cursor=getContext().getContentResolver().query(MoviesContract.FavMovies.CONTENT_URI,
-                    new String[]{MoviesContract.FavMovies.COLUMN_POSTER_PATH},
-                    null,
-                    null,
-                    null);
-           // movieAdapter=new MovieAdapter(mContext,cursor,0);*/
             return new CursorLoader(getActivity(),
                     MoviesContract.FavMovies.CONTENT_URI,
                     MOVIE_COLUMNS,
@@ -174,6 +167,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.e(LOG_TAG,"data count is "+data.getCount());
         movieAdapter.swapCursor(data);
 
     }

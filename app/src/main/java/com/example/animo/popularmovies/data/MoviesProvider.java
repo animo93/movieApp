@@ -53,13 +53,7 @@ public class MoviesProvider extends ContentProvider {
                 break;
             }
             case MOVIES_WITH_IDS: {
-                retCursor=moviesDbHelper.getReadableDatabase().query(MoviesContract.FavMovies.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
+                retCursor=getMoviesByMovieId(uri,projection,sortOrder);
                 break;
             }
             default:
@@ -67,6 +61,25 @@ public class MoviesProvider extends ContentProvider {
         }
         retCursor.setNotificationUri(getContext().getContentResolver(),uri);
         return retCursor;
+    }
+
+    private Cursor getMoviesByMovieId(Uri uri, String[] projection, String sortOrder) {
+        String selection;
+        String[] selectionArgs;
+
+        selection=MoviesContract.FavMovies.TABLE_NAME+
+                "." + MoviesContract.FavMovies.COLUMN_MOVIE_ID + " = ? ";
+        selectionArgs=new String[]{MoviesContract.FavMovies.getMovieIdFromUri(uri)};
+
+        return moviesDbHelper.getReadableDatabase().query(
+                MoviesContract.FavMovies.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
     }
 
     @Nullable

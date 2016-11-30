@@ -75,8 +75,8 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
             @Override
             public void onClick(View v) {
                 Picasso.with(detailActivityFragment.getContext())
-                        .load((String) objects[1])
-                        .into(target((String) objects[0]));
+                        .load((String) objects[6])
+                        .into(target());
                 handler = new Handler(Looper.getMainLooper()) {
                     @Override
                     public void handleMessage(Message msg) {
@@ -86,16 +86,34 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                                 String path = (String) msg.obj;
                                 Log.d(LOG_TAG,"The File path is "+path);
                                 filePath = path;
-                                ContentValues movieValues=new ContentValues();
+                                final ContentValues movieValues=new ContentValues();
                                 movieValues.put(MoviesContract.FavMovies.COLUMN_TITLE, (String) objects[0]);
                                 movieValues.put(MoviesContract.FavMovies.COLUMN_DATE, (String) objects[2]);
                                 movieValues.put(MoviesContract.FavMovies.COLUMN_OVERVIEW, (String) objects[5]);
                                 movieValues.put(MoviesContract.FavMovies.COLUMN_RATING, (String) objects[4]);
                                 movieValues.put(MoviesContract.FavMovies.COLUMN_TIME, (String) objects[3]);
                                 movieValues.put(MoviesContract.FavMovies.COLUMN_POSTER_PATH,filePath);
+                                movieValues.put(MoviesContract.FavMovies.COLUMN_MOVIE_ID, (String) objects[7]);
 
-                                detailActivityFragment.getContext().getContentResolver().insert(MoviesContract.FavMovies.CONTENT_URI,
-                                        movieValues);
+                                Picasso.with(detailActivityFragment.getContext())
+                                        .load((String) objects[1])
+                                        .into(target());
+                                handler = new Handler(Looper.getMainLooper()){
+                                    @Override
+                                    public void handleMessage(Message msg) {
+                                        switch (msg.what) {
+                                            case TASK_COMPLETE:
+                                                String backdropPath= (String) msg.obj;
+                                                Log.d(LOG_TAG,"Backdrop file path "+backdropPath);
+                                                movieValues.put(MoviesContract.FavMovies.COLUMN_BACKDROP_PATH,backdropPath);
+                                                detailActivityFragment.getContext().getContentResolver().insert(MoviesContract.FavMovies.CONTENT_URI,
+                                                        movieValues);
+                                                break;
+                                            default:
+                                                super.handleMessage(msg);
+                                        }
+                                    }
+                                };
                                 break;
                             default:
                                 super.handleMessage(msg);
@@ -104,16 +122,6 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
 
                     }
                 };
-              /* ContentValues movieValues=new ContentValues();
-                movieValues.put(MoviesContract.FavMovies.COLUMN_TITLE, (String) objects[0]);
-                movieValues.put(MoviesContract.FavMovies.COLUMN_DATE, (String) objects[2]);
-                movieValues.put(MoviesContract.FavMovies.COLUMN_OVERVIEW, (String) objects[5]);
-                movieValues.put(MoviesContract.FavMovies.COLUMN_RATING, (String) objects[4]);
-                movieValues.put(MoviesContract.FavMovies.COLUMN_TIME, (String) objects[3]);
-                movieValues.put(MoviesContract.FavMovies.COLUMN_POSTER_PATH,filePath);
-
-                detailActivityFragment.getContext().getContentResolver().insert(MoviesContract.FavMovies.CONTENT_URI,
-                        movieValues);*/
 
             }
 
@@ -126,26 +134,33 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
     private Object[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside getMovieDataFromJson");
         JSONObject movieJson = new JSONObject(movieJsonStr);
-        Object[] objects = new Object[6];
+        Object[] objects = new Object[8];
         String movieTitle;
+        String movieId;
         String moviePosterUrl;
+        String movieBackdropPath;
         String movieReleaseDate;
         String movieTime;
         String movieRating;
         Object movieOverview;
 
         movieTitle = movieJson.getString("title");
-        moviePosterUrl = "http://image.tmdb.org/t/p/w185//" + movieJson.getString("backdrop_path");
+        movieId=movieJson.getString("id");
+        movieBackdropPath = "http://image.tmdb.org/t/p/w185//" + movieJson.getString("backdrop_path");
+        moviePosterUrl = "http://image.tmdb.org/t/p/w185//" + movieJson.getString("poster_path");
         movieReleaseDate = movieJson.getString("release_date").substring(0, 4);
         movieTime = movieJson.getString("runtime") + "min";
         movieRating = movieJson.getString("vote_average") + "/10";
         movieOverview = movieJson.get("overview");
         objects[0] = movieTitle;
-        objects[1] = moviePosterUrl;
+        objects[1] = movieBackdropPath;
         objects[2] = movieReleaseDate;
         objects[3] = movieTime;
         objects[4] = movieRating;
         objects[5] = movieOverview;
+        objects[6] = moviePosterUrl;
+        objects[7] = movieId;
+
         return objects;
 
     }
@@ -213,7 +228,7 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
         return null;
     }
 
-    private Target target(final String imageName) {
+    private Target target() {
         verifyStoragePermissions(detailActivityFragment.getActivity());
         return new Target() {
             @Override
@@ -225,11 +240,11 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                             /*file = new File(
                                     Environment.getExternalStorageDirectory().getPath()
                                             + "/" + imageName + ".jpg");*/
-                            file=getAlbumStorageDir(detailActivityFragment.getContext(),imageName);
+                            file=getAlbumStorageDir(detailActivityFragment.getContext());
                             try {
                                 file.createNewFile();
                                 FileOutputStream fileOutputStream = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                                 fileOutputStream.close();
                                 Log.e(LOG_TAG, "File path is" + file.getAbsolutePath());
                                 Message message=handler.obtainMessage(TASK_COMPLETE,file.getAbsolutePath());
@@ -285,14 +300,14 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
         return false;
     }
 
-    public File getAlbumStorageDir(Context context, String imageName) {
+    public File getAlbumStorageDir(Context context) {
         String root=context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString();
         File myDir=new File(root+"/saved_images");
         myDir.mkdirs();
         Random generator=new Random();
         int n=10000;
         n=generator.nextInt(n);
-        String fname="Image-"+n+".jpg";
+        String fname="Image-"+n+".png";
         File file=new File(myDir,fname);
         if(file.exists())
             file.delete();

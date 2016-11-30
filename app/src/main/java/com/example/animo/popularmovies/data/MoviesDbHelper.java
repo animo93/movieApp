@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by animo on 29/9/16.
  */
 public class MoviesDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION=2;
+    private static final int DATABASE_VERSION=4;
 
     static final String DATABASE_NAME="movies.db";
 
@@ -21,12 +21,12 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_MOVIES_TABLE= "CREATE TABLE "+ MoviesContract.FavMovies.TABLE_NAME+ " ("+
                 MoviesContract.FavMovies._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
-                // the ID of the location entry associated with this weather data
+                MoviesContract.FavMovies.COLUMN_MOVIE_ID + " TEXT NOT NULL, "+
                 MoviesContract.FavMovies.COLUMN_DATE + " TEXT NOT NULL, " +
                 MoviesContract.FavMovies.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 MoviesContract.FavMovies.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
                 MoviesContract.FavMovies.COLUMN_RATING + " TEXT NOT NULL," +
-
+                MoviesContract.FavMovies.COLUMN_BACKDROP_PATH + " TEXT NOT NULL, " +
                 MoviesContract.FavMovies.COLUMN_TIME + " TEXT NOT NULL, " +
                 MoviesContract.FavMovies.COLUMN_TITLE + " TEXT NOT NULL " +
                 " );";

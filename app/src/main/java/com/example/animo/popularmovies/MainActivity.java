@@ -1,6 +1,7 @@
 package com.example.animo.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,7 +12,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,5 +45,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(String movieId,String movieTitle) {
+        MovieData movieData=new MovieData(movieId,movieTitle);
+        Intent intent = new Intent(this,DetailActivity.class).putExtra("extra_text",movieData);
+        startActivity(intent);
     }
 }

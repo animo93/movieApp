@@ -47,12 +47,10 @@ public class ImageListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        //GridView gridView;
         View view;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.movie_list, parent, false);
-            //gridView= (GridView) inflater.inflate(R.layout.fragment_main,null);
         } else {
             view = convertView;
         }
