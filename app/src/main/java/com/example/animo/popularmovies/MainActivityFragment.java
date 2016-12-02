@@ -58,12 +58,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        Log.e("inside NetworkAvailable", "activeNetworkInfo is " + activeNetworkInfo);
+        Log.d("inside NetworkAvailable", "activeNetworkInfo is " + activeNetworkInfo);
         return null != activeNetworkInfo && activeNetworkInfo.isConnected();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        Log.e(LOG_TAG,"inside onActivityCreated");
         String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
         if(preferredSortOrder.equals("favourite")){
             getLoaderManager().initLoader(MOVIE_LOADER,null,this);
@@ -78,30 +79,25 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.e("inside onOptionsItem","item is"+item.getGroupId());
         return super.onOptionsItemSelected(item);
 
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.e(LOG_TAG,"inside onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
 
     }
 
-    public MainActivityFragment() {
-    }
-
-    @Override
-    public void onResume() {
+    public void onOptionsChanged(){
+        final String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
+        Log.e(LOG_TAG,"inside onOptionsChanged "+preferredSortOrder);
         FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(this);
-        if (isNetworkAvailable()) {
-            final String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
-            Log.v("inside onResume ","preferedSortOrder is "+preferredSortOrder);
+        if (isNetworkAvailable() || preferredSortOrder.equals("favourite"))  {
             if(preferredSortOrder.equals("favourite")){
-                Log.e(LOG_TAG,"inside if "+preferredSortOrder);
                 getLoaderManager().restartLoader(MOVIE_LOADER,null,this);
                 movieAdapter=new MovieAdapter(getActivity(),null,0);
                 gridView.setAdapter(movieAdapter);
@@ -118,7 +114,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                         if(cursor!=null){
                             ((Callback)getActivity())
                                     .onItemSelected(cursor
-                                    .getString(COL_MOVIE_ID),cursor.getString(COL_MOVIE_TITLE));
+                                            .getString(COL_MOVIE_ID),cursor.getString(COL_MOVIE_TITLE));
                         }
                     } else {
                         long details = imageListAdapter.getItemId(position);
@@ -131,8 +127,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
                 }
             });
+        }else {
+            movieAdapter.swapCursor(null);
         }
-        super.onResume();
+    }
+
+    public MainActivityFragment() {
     }
 
     @Override
@@ -143,16 +143,17 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Log.e(LOG_TAG,"inside onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.gridView);
+        onOptionsChanged();
         return rootView;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
-        Log.e(LOG_TAG,"inside onCreateLoader and preferredSortOrder "+preferredSortOrder);
+        Log.d(LOG_TAG,"inside onCreateLoader and preferredSortOrder "+preferredSortOrder);
         if(preferredSortOrder.equals("favourite")){
             return new CursorLoader(getActivity(),
                     MoviesContract.FavMovies.CONTENT_URI,
@@ -167,13 +168,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.e(LOG_TAG,"data count is "+data.getCount());
+        Log.d(LOG_TAG,"data count is "+data.getCount());
         movieAdapter.swapCursor(data);
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        Log.e(LOG_TAG,"inside onLoaderReset");
         movieAdapter.swapCursor(null);
     }
 }

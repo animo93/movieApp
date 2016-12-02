@@ -14,8 +14,33 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback{
 
+    private String sortOption;
+
+    @Override
+    protected void onResume() {
+        Log.e("MainActivity","inside onResume");
+        String sortOption=Utility.getPreferredSortOrder(this);
+        Log.e("MainActivity","sort order "+sortOption);
+        if(sortOption!=null && !sortOption.equals(this.sortOption)){
+            Log.e("MainActivity","inside if");
+            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if(mainActivityFragment!=null){
+                mainActivityFragment.onOptionsChanged();
+            }
+            DetailActivityFragment detailActivityFragment = (DetailActivityFragment) getSupportFragmentManager().findFragmentById(R.id.detail_fragment);
+            if(detailActivityFragment!=null){
+                detailActivityFragment.onSortChanged();
+            }
+
+        }
+        this.sortOption=sortOption;
+        super.onResume();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("MainActivity","inside onCreate");
+        sortOption=Utility.getPreferredSortOrder(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

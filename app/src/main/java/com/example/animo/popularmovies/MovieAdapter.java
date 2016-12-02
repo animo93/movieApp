@@ -34,7 +34,7 @@ public class MovieAdapter extends CursorAdapter{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        Log.e("bind view","poster "+cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_PATH));
+        Log.d("bind view","poster "+cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_PATH));
         File image=new File(cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_PATH));
         ViewHolder viewHolder= (ViewHolder) view.getTag();
         Picasso.with(context)
@@ -46,7 +46,6 @@ public class MovieAdapter extends CursorAdapter{
 
     public static class ViewHolder {
         public final ImageView imageView;
-
         public ViewHolder(View view){
             imageView= (ImageView) view.findViewById(R.id.imageView);
         }

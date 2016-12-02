@@ -78,6 +78,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public DetailActivityFragment() {
     }
 
+    public void onSortChanged() {
+        getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER,null,this);
+    }
+
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,11 +103,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         DetailViewTask detailViewTask = new DetailViewTask(this);
         MovieData movieData=intent.getParcelableExtra("extra_text");
 
-        Log.e("DetailActivityFragment","is "+movieData.movieId);
+        Log.d("DetailActivityFragment","is "+movieData.movieId);
 
         String sortPreference=Utility.getPreferredSortOrder(getContext());
         if(sortPreference.equals("favourite")){
-            Log.e(Log_tag,"preference sort order is "+sortPreference);
+            Log.d(Log_tag,"preference sort order is "+sortPreference);
             mUri= MoviesContract.FavMovies.buildMovieUri(Long.parseLong(movieData.movieId));
             getLoaderManager().initLoader(MOVIE_DETAIL_LOADER,null,this);
         } else {
@@ -134,7 +138,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.e(Log_tag,"no of columns "+data.getColumnCount());
+        Log.d(Log_tag,"no of columns "+data.getColumnCount());
         if(data!=null && data.moveToFirst()){
             dateTextView.setText(data.getString(COL_MOVIE_DATE));
             timeTextView.setText(data.getString(COL_MOVIE_TIME));

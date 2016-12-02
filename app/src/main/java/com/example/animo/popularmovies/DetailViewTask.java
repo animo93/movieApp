@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.os.EnvironmentCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.animo.popularmovies.data.MoviesContract;
 import com.squareup.picasso.Picasso;
@@ -59,10 +61,9 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
     @Override
     protected void onPostExecute(final Object[] objects) {
         super.onPostExecute(objects);
-        Log.e(DetailActivityFragment.class.getSimpleName(), "inside onPostExecute");
-        Log.e(DetailActivity.class.getSimpleName(), "movie name " + objects[0]);
-        String title = (String) objects[0];
-        Log.e(LOG_TAG, "Title is " + title);
+        Log.d(LOG_TAG, "inside onPostExecute");
+        final CharSequence text="Movie Marked as Favourite";
+
         Picasso.with(detailActivityFragment.getContext())
                 .load((String) objects[1])
                 .fit()
@@ -72,11 +73,29 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
         detailActivityFragment.ratingTextView.setText((String) objects[4]);
         detailActivityFragment.overviewTextView.setText((CharSequence) objects[5]);
         detailActivityFragment.button.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+                Cursor movieCursor=detailActivityFragment.getContext().getContentResolver().query(
+                        MoviesContract.FavMovies.buildMovieUriFromId((String) objects[7]),
+                        new String[]{MoviesContract.FavMovies.TABLE_NAME+"."+MoviesContract.FavMovies._ID},
+                        null,
+                        null,
+                        null
+                );
+                if(movieCursor.moveToFirst()){
+                    String text="Movie is already marked favourite";
+                    int duration=Toast.LENGTH_SHORT;
+                    Toast toast=Toast.makeText(detailActivityFragment.getContext(),text,duration);
+                    toast.show();
+                    return;
+                }
+                verifyStoragePermissions(detailActivityFragment.getActivity());
+
                 Picasso.with(detailActivityFragment.getContext())
                         .load((String) objects[6])
                         .into(target());
+
                 handler = new Handler(Looper.getMainLooper()) {
                     @Override
                     public void handleMessage(Message msg) {
@@ -98,6 +117,7 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                                 Picasso.with(detailActivityFragment.getContext())
                                         .load((String) objects[1])
                                         .into(target());
+
                                 handler = new Handler(Looper.getMainLooper()){
                                     @Override
                                     public void handleMessage(Message msg) {
@@ -119,9 +139,13 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                                 super.handleMessage(msg);
 
                         }
+                        int duration= Toast.LENGTH_SHORT;
+                        Toast toast=Toast.makeText(detailActivityFragment.getContext(),text,duration);
+                        toast.show();
 
                     }
                 };
+
 
             }
 
@@ -229,7 +253,6 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
     }
 
     private Target target() {
-        verifyStoragePermissions(detailActivityFragment.getActivity());
         return new Target() {
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -237,9 +260,6 @@ public class DetailViewTask extends AsyncTask<String, Void, Object[]> {
                     @Override
                     public void run() {
                         if(isExternalStorageWritable()){
-                            /*file = new File(
-                                    Environment.getExternalStorageDirectory().getPath()
-                                            + "/" + imageName + ".jpg");*/
                             file=getAlbumStorageDir(detailActivityFragment.getContext());
                             try {
                                 file.createNewFile();
