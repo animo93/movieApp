@@ -15,6 +15,8 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback{
 
     private String sortOption;
+    private Boolean mTwoPane;
+    private static final String DETAIlFRAGMENT_TAG="DFTAG";
 
     @Override
     protected void onResume() {
@@ -23,11 +25,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         Log.e("MainActivity","sort order "+sortOption);
         if(sortOption!=null && !sortOption.equals(this.sortOption)){
             Log.e("MainActivity","inside if");
-            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+            MainActivityFragment mainActivityFragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_movies);
             if(mainActivityFragment!=null){
                 mainActivityFragment.onOptionsChanged();
             }
-            DetailActivityFragment detailActivityFragment = (DetailActivityFragment) getSupportFragmentManager().findFragmentById(R.id.detail_fragment);
+            DetailActivityFragment detailActivityFragment = (DetailActivityFragment) getSupportFragmentManager().findFragmentByTag(DETAIlFRAGMENT_TAG);
             if(detailActivityFragment!=null){
                 detailActivityFragment.onSortChanged();
             }
@@ -46,6 +48,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Pop Movies");
         setSupportActionBar(toolbar);
+
+        if(findViewById(R.id.movie_detail_container)!=null){
+            mTwoPane=true;
+            if(savedInstanceState==null){
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.movie_detail_container,new DetailActivityFragment(),DETAIlFRAGMENT_TAG)
+                        .commit();
+            }
+        }else {
+            mTwoPane=false;
+        }
     }
 
     @Override
@@ -74,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override
     public void onItemSelected(String movieId,String movieTitle) {
+        if(mTwoPane){
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container,new DetailActivityFragment(),DETAIlFRAGMENT_TAG)
+                    .commit();
+        }
         MovieData movieData=new MovieData(movieId,movieTitle);
         Intent intent = new Intent(this,DetailActivity.class).putExtra("extra_text",movieData);
         startActivity(intent);
