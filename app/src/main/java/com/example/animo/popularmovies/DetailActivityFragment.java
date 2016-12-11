@@ -87,6 +87,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside onCreateView");
+        MovieData movieData=null;
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         Intent intent = getActivity().getIntent();
         this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
@@ -101,21 +102,29 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
 
         DetailViewTask detailViewTask = new DetailViewTask(this);
-        MovieData movieData=intent.getParcelableExtra("extra_text");
+        Bundle arguments=getArguments();
 
-        Log.d("DetailActivityFragment","is "+movieData.movieId);
-
-        String sortPreference=Utility.getPreferredSortOrder(getContext());
-        if(sortPreference.equals("favourite")){
-            Log.d(Log_tag,"preference sort order is "+sortPreference);
-            mUri= MoviesContract.FavMovies.buildMovieUri(Long.parseLong(movieData.movieId));
-            getLoaderManager().initLoader(MOVIE_DETAIL_LOADER,null,this);
-        } else {
-            detailViewTask.execute(""+movieData.movieId);
-            ViewTrailerTask viewTrailerTask=new ViewTrailerTask(this);
-            viewTrailerTask.execute(""+movieData.movieId);
-
+        if(arguments!=null){
+            movieData=arguments.getParcelable("extra_text");
         }
+        //MovieData movieData=intent.getParcelableExtra("extra_text");
+        if(movieData.movieId!=null){
+            Log.d("DetailActivityFragment","is "+movieData.movieId);
+
+            String sortPreference=Utility.getPreferredSortOrder(getContext());
+            if(sortPreference.equals("favourite")){
+                Log.d(Log_tag,"preference sort order is "+sortPreference);
+                mUri= MoviesContract.FavMovies.buildMovieUri(Long.parseLong(movieData.movieId));
+                getLoaderManager().initLoader(MOVIE_DETAIL_LOADER,null,this);
+            } else {
+                detailViewTask.execute(""+movieData.movieId);
+                ViewTrailerTask viewTrailerTask=new ViewTrailerTask(this);
+                viewTrailerTask.execute(""+movieData.movieId);
+
+            }
+        }
+
+
 
         return rootView;
     }

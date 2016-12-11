@@ -32,7 +32,11 @@ public class DetailActivity extends AppCompatActivity {
             collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
             collapsingToolbarLayout.setTitle(movieData.movieName);
 
+            Bundle args=new Bundle();
+            args.putParcelable("extra_text",movieData);
             DetailActivityFragment detailActivityFragment=new DetailActivityFragment();
+            detailActivityFragment.setArguments(args);
+
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.movie_detail_container,detailActivityFragment)
                     .commit();

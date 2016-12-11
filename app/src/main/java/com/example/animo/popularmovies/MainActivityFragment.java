@@ -109,7 +109,24 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if(preferredSortOrder.equals("favourite")){
+                    String movieId=null;
+                    String movieName=null;
+
+                    if(preferredSortOrder.equals("farourite")){
+                        Cursor cursor= (Cursor) parent.getItemAtPosition(position);
+                        if(cursor!=null){
+                            movieId=cursor.getString(COL_MOVIE_ID);
+                            movieName=cursor.getString(COL_MOVIE_TITLE);
+                        }
+                    } else {
+                        long details= imageListAdapter.getItemId(position);
+                        movieId = movieIds[(int) details];
+                        movieName = movieNames[(int) details];
+                    }
+                    Log.e(LOG_TAG,"movieId is "+movieId+" and movieName is "+movieName);
+                    ((Callback)getActivity())
+                            .onItemSelected(movieId,movieName);
+                    /*if(preferredSortOrder.equals("favourite")){
                         Cursor cursor= (Cursor) parent.getItemAtPosition(position);
                         if(cursor!=null){
                             ((Callback)getActivity())
@@ -122,7 +139,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                         Intent intent = new Intent(getActivity(), DetailActivity.class)
                                 .putExtra("extra_text", movieData);
                         startActivity(intent);
-                    }
+                    }*/
 
 
                 }

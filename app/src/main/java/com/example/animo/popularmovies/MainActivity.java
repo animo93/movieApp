@@ -50,10 +50,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         setSupportActionBar(toolbar);
 
         if(findViewById(R.id.movie_detail_container)!=null){
+            Log.e("MainActivity","mTwoPane is true");
             mTwoPane=true;
             if(savedInstanceState==null){
+                Log.e("MainActivity","savedInstanceState is null");
+                DetailActivityFragment detailActivityFragment=new DetailActivityFragment();
+                MovieData movieData=new MovieData(null,null,"true");
+
+                Bundle bundle=new Bundle();
+                bundle.putParcelable("extra_text",movieData);
+
+                detailActivityFragment.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.movie_detail_container,new DetailActivityFragment(),DETAIlFRAGMENT_TAG)
+                        .replace(R.id.movie_detail_container,detailActivityFragment,DETAIlFRAGMENT_TAG)
                         .commit();
             }
         }else {
@@ -87,13 +96,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override
     public void onItemSelected(String movieId,String movieTitle) {
-        if(mTwoPane){
+        Log.e("MainActivity","inside onItemSelected mTwoPane"+mTwoPane);
+        String mTwoPane=(this.mTwoPane)?"true":"false";
+        MovieData movieData=new MovieData(movieId,movieTitle,mTwoPane);
+        if(this.mTwoPane){
+            Bundle args=new Bundle();
+            args.putParcelable("extra_text",movieData);
+
+            DetailActivityFragment detailActivityFragment=new DetailActivityFragment();
+            detailActivityFragment.setArguments(args);
+
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.movie_detail_container,new DetailActivityFragment(),DETAIlFRAGMENT_TAG)
+                    .replace(R.id.movie_detail_container,detailActivityFragment,DETAIlFRAGMENT_TAG)
                     .commit();
+        } else {
+            Intent intent = new Intent(this,DetailActivity.class).putExtra("extra_text",movieData);
+            startActivity(intent);
         }
-        MovieData movieData=new MovieData(movieId,movieTitle);
-        Intent intent = new Intent(this,DetailActivity.class).putExtra("extra_text",movieData);
-        startActivity(intent);
+
     }
 }

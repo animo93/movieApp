@@ -9,16 +9,19 @@ import android.os.Parcelable;
 public class MovieData implements Parcelable {
     String movieId;
     String movieName;
+    String mTwoPane;
 
-    protected MovieData(String in,String movieName) {
+    protected MovieData(String in,String movieName,String mTwoPane) {
         super();
         this.movieId=in;
         this.movieName=movieName;
+        this.mTwoPane=mTwoPane;
     }
     protected MovieData(Parcel in){
 
         this.movieId=in.readString();
         this.movieName=in.readString();
+        this.mTwoPane=in.readString();
     }
 
     public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {
@@ -42,5 +45,6 @@ public class MovieData implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(movieId);
         dest.writeString(movieName);
+        dest.writeString(mTwoPane);
     }
 }
