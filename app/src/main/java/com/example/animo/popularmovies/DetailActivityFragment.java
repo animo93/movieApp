@@ -88,6 +88,24 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                              Bundle savedInstanceState) {
         Log.e(DetailActivityFragment.class.getSimpleName(), "inside onCreateView");
         MovieData movieData=null;
+        Bundle arguments=getArguments();
+
+        if(arguments!=null){
+            movieData=arguments.getParcelable("extra_text");
+        }
+        View fragmentView=inflater.inflate(R.layout.activity_main,container,false);
+        Log.e(Log_tag,"fragment view "+fragmentView.toString());
+        CollapsingToolbarLayout collapsingToolbarLayout=
+                (CollapsingToolbarLayout) fragmentView.findViewById(R.id.collapsing_toolbar);
+
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
+        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
+        collapsingToolbarLayout.setTitle(movieData.movieName);
+
+        Log.e("DetailActivity","Name is "+movieData.movieName);
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
+        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
+        collapsingToolbarLayout.setTitle(movieData.movieName);
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         Intent intent = getActivity().getIntent();
         this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
@@ -102,11 +120,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
 
         DetailViewTask detailViewTask = new DetailViewTask(this);
-        Bundle arguments=getArguments();
+        /*Bundle arguments=getArguments();
 
         if(arguments!=null){
             movieData=arguments.getParcelable("extra_text");
-        }
+        }*/
         //MovieData movieData=intent.getParcelableExtra("extra_text");
         if(movieData.movieId!=null){
             Log.d("DetailActivityFragment","is "+movieData.movieId);
