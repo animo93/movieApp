@@ -53,6 +53,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     public interface Callback {
         public void onItemSelected(String movieId,String movieTitle);
+        public void changemovieTitle(String title);
     }
 
     private boolean isNetworkAvailable() {
@@ -111,8 +112,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String movieId=null;
                     String movieName=null;
-
-                    if(preferredSortOrder.equals("farourite")){
+                    if(preferredSortOrder.equals("favourite")){
                         Cursor cursor= (Cursor) parent.getItemAtPosition(position);
                         if(cursor!=null){
                             movieId=cursor.getString(COL_MOVIE_ID);
