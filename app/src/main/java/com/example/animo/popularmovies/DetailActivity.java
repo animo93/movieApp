@@ -18,9 +18,10 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityF
         setContentView(R.layout.activity_detail);
 
         if(savedInstanceState==null){
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+            /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
             setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+
 
 
             /*CollapsingToolbarLayout collapsingToolbarLayout=

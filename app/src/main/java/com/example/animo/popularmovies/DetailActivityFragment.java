@@ -12,6 +12,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,7 +84,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     }
 
     public void onSortChanged() {
-        getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER,null,this);
+        //getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER,null,this);
+        getLoaderManager().destroyLoader(MOVIE_DETAIL_LOADER);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -99,7 +101,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         }
         View fragmentView=inflater.inflate(R.layout.activity_detail,container,false);
         Log.e(Log_tag,"fragment view "+fragmentView.toString());
-        if(movieData.mTwoPane.equals("true")){
+        /*if(movieData.mTwoPane.equals("true")){
             //((MainActivityFragment.Callback)getActivity()).changemovieTitle(movieData.movieName);
             CollapsingToolbarLayout collapsingToolbarLayout=
                     (CollapsingToolbarLayout) fragmentView.findViewById(R.id.collapsing_toolbar_two_pane);
@@ -108,7 +110,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             collapsingToolbarLayout.setTitle(movieData.movieName);
         } else {
             ((DetailCallback)getActivity()).changemovieTitle(movieData.movieName);
-        }
+        }*/
 
 
         /*CollapsingToolbarLayout collapsingToolbarLayout=
@@ -119,6 +121,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
         collapsingToolbarLayout.setTitle(movieData.movieName);*/
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        CollapsingToolbarLayout collapsingToolbarLayout=
+                (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar_two_pane);
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
+        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
+        collapsingToolbarLayout.setTitle(movieData.movieName);
         Intent intent = getActivity().getIntent();
         this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
 

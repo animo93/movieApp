@@ -33,7 +33,7 @@
 
     </android.support.design.widget.AppBarLayout>-->
 
-    <include layout="@layout/collapsing_toolbar" />
+    <!--<include layout="@layout/collapsing_toolbar" />-->
 
     <include layout="@layout/content_detail" />
 

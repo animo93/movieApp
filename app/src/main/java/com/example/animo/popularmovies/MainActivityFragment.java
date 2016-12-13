@@ -97,10 +97,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         final String preferredSortOrder=Utility.getPreferredSortOrder(getActivity());
         Log.e(LOG_TAG,"inside onOptionsChanged "+preferredSortOrder);
         FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(this);
+
         if (isNetworkAvailable() || preferredSortOrder.equals("favourite"))  {
             if(preferredSortOrder.equals("favourite")){
                 getLoaderManager().restartLoader(MOVIE_LOADER,null,this);
-                movieAdapter=new MovieAdapter(getActivity(),null,0);
+                //movieAdapter=new MovieAdapter(getActivity(),null,0);
                 gridView.setAdapter(movieAdapter);
             }
             else {
@@ -163,7 +164,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         Log.e(LOG_TAG,"inside onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.gridView);
-        onOptionsChanged();
+        movieAdapter=new MovieAdapter(getActivity(),null,0);
+        if(isNetworkAvailable())
+            onOptionsChanged();
         return rootView;
     }
 
