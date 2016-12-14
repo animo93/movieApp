@@ -122,11 +122,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         collapsingToolbarLayout.setTitle(movieData.movieName);*/
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        CollapsingToolbarLayout collapsingToolbarLayout=
+        /*CollapsingToolbarLayout collapsingToolbarLayout=
                 (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar_two_pane);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-        collapsingToolbarLayout.setTitle(movieData.movieName);
+        collapsingToolbarLayout.setTitle(movieData.movieName);*/
         Intent intent = getActivity().getIntent();
         this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
 
