@@ -53,7 +53,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     public interface Callback {
         public void onItemSelected(String movieId,String movieTitle);
-        public void changemovieTitle(String title);
     }
 
     private boolean isNetworkAvailable() {
@@ -101,7 +100,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         if (isNetworkAvailable() || preferredSortOrder.equals("favourite"))  {
             if(preferredSortOrder.equals("favourite")){
                 getLoaderManager().restartLoader(MOVIE_LOADER,null,this);
-                //movieAdapter=new MovieAdapter(getActivity(),null,0);
                 gridView.setAdapter(movieAdapter);
             }
             else {
@@ -127,20 +125,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                     Log.e(LOG_TAG,"movieId is "+movieId+" and movieName is "+movieName);
                     ((Callback)getActivity())
                             .onItemSelected(movieId,movieName);
-                    /*if(preferredSortOrder.equals("favourite")){
-                        Cursor cursor= (Cursor) parent.getItemAtPosition(position);
-                        if(cursor!=null){
-                            ((Callback)getActivity())
-                                    .onItemSelected(cursor
-                                            .getString(COL_MOVIE_ID),cursor.getString(COL_MOVIE_TITLE));
-                        }
-                    } else {
-                        long details = imageListAdapter.getItemId(position);
-                        movieData = new MovieData(movieIds[((int) details)],movieNames[(int) details]);
-                        Intent intent = new Intent(getActivity(), DetailActivity.class)
-                                .putExtra("extra_text", movieData);
-                        startActivity(intent);
-                    }*/
 
 
                 }

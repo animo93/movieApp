@@ -9,8 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
-public class DetailActivity extends AppCompatActivity implements DetailActivityFragment.DetailCallback{
+public class DetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,20 +19,18 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityF
         setContentView(R.layout.activity_detail);
 
         if(savedInstanceState==null){
-            /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
-            /*CollapsingToolbarLayout collapsingToolbarLayout=
-                    (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_two_pane);*/
+            CollapsingToolbarLayout collapsingToolbarLayout=
+                    (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
             Intent intent = getIntent();
             MovieData movieData=intent.getParcelableExtra("extra_text");
             Log.e("DetailActivity","Name is "+movieData.movieName);
-            /*collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
+            collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
             collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-            collapsingToolbarLayout.setTitle(movieData.movieName);*/
+            collapsingToolbarLayout.setTitle(movieData.movieName);
 
             Bundle args=new Bundle();
             args.putParcelable("extra_text",movieData);
@@ -43,18 +42,5 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityF
                     .commit();
         }
 
-
-
-
-
-    }
-
-    @Override
-    public void changemovieTitle(String title) {
-        CollapsingToolbarLayout collapsingToolbarLayout=
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_two_pane);
-        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
-        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-        collapsingToolbarLayout.setTitle(title);
     }
 }

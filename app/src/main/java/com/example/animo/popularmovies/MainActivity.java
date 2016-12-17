@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                 Log.e("MainActivity","savedInstanceState is null");
                 DetailActivityFragment detailActivityFragment=new DetailActivityFragment();
                 MovieData movieData=new MovieData(null,null,"true");
-
+                collapsingToolbarLayout=
+                        (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_two_pane);
 
                 Bundle bundle=new Bundle();
                 bundle.putParcelable("extra_text",movieData);
@@ -115,26 +116,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                     .commit();
 
             ViewGroup container= (ViewGroup) findViewById(R.id.container);
-            View collapsing_layout=getLayoutInflater().inflate(R.layout.collapsing_toolbar,null);
-            collapsingToolbarLayout= (CollapsingToolbarLayout) collapsing_layout.findViewById(R.id.collapsing_toolbar_two_pane);
+            /*View collapsing_layout=getLayoutInflater().inflate(R.layout.collapsing_toolbar,null);*/
+            collapsingToolbarLayout= (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_two_pane);
             collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
             collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
             collapsingToolbarLayout.setTitle(movieTitle);
-            container.addView(collapsing_layout);
+            container.addView(collapsingToolbarLayout);
         } else {
             Intent intent = new Intent(this,DetailActivity.class).putExtra("extra_text",movieData);
             startActivity(intent);
         }
 
-    }
-
-    @Override
-    public void changemovieTitle(String title) {
-
-        /*CollapsingToolbarLayout collapsingToolbarLayout=
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_two_pane);
-        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
-        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-        collapsingToolbarLayout.setTitle(title);*/
     }
 }

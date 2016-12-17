@@ -5,9 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/coordinator_layout"
     tools:context="com.example.animo.popularmovies.DetailActivity">
 
-  <!--  <android.support.design.widget.AppBarLayout
+
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_backdrop_height"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -31,10 +33,10 @@
             app:layout_collapseMode="pin"/>
         </android.support.design.widget.CollapsingToolbarLayout>
 
-    </android.support.design.widget.AppBarLayout>-->
+    </android.support.design.widget.AppBarLayout>
 
-    <!--<include layout="@layout/collapsing_toolbar" />-->
+  <!--<include layout="@layout/collapsing_toolbar" android:id="@+id/collapsing_single_pane"/>-->
 
-    <include layout="@layout/content_detail" />
+  <include layout="@layout/content_detail" />
 
 </android.support.design.widget.CoordinatorLayout>

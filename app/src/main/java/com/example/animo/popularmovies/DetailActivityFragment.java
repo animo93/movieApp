@@ -54,6 +54,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     ViewGroup container;
     Button button;
 
+
     Uri mUri;
 
     private static final int MOVIE_DETAIL_LOADER=0;
@@ -75,10 +76,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     static final int COL_MOVIE_OVERVIEW=4;
     static final int COL_MOVIE_BACKDROP_PATH=5;
 
-    public interface DetailCallback {
-        public void changemovieTitle(String title);
-    }
-
 
     public DetailActivityFragment() {
     }
@@ -96,37 +93,15 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         MovieData movieData=null;
         Bundle arguments=getArguments();
 
+
         if(arguments!=null){
             movieData=arguments.getParcelable("extra_text");
         }
         View fragmentView=inflater.inflate(R.layout.activity_detail,container,false);
         Log.e(Log_tag,"fragment view "+fragmentView.toString());
-        /*if(movieData.mTwoPane.equals("true")){
-            //((MainActivityFragment.Callback)getActivity()).changemovieTitle(movieData.movieName);
-            CollapsingToolbarLayout collapsingToolbarLayout=
-                    (CollapsingToolbarLayout) fragmentView.findViewById(R.id.collapsing_toolbar_two_pane);
-            collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
-            collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-            collapsingToolbarLayout.setTitle(movieData.movieName);
-        } else {
-            ((DetailCallback)getActivity()).changemovieTitle(movieData.movieName);
-        }*/
-
-
-        /*CollapsingToolbarLayout collapsingToolbarLayout=
-                (CollapsingToolbarLayout) fragmentView.findViewById(R.id.collapsing_toolbar_two_pane);*/
 
         Log.e("DetailActivity","Name is "+movieData.movieName);
-        /*collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
-        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-        collapsingToolbarLayout.setTitle(movieData.movieName);*/
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        /*CollapsingToolbarLayout collapsingToolbarLayout=
-                (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar_two_pane);
-        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
-        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-        collapsingToolbarLayout.setTitle(movieData.movieName);*/
         Intent intent = getActivity().getIntent();
         this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
 
@@ -140,12 +115,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
 
         DetailViewTask detailViewTask = new DetailViewTask(this);
-        /*Bundle arguments=getArguments();
 
-        if(arguments!=null){
-            movieData=arguments.getParcelable("extra_text");
-        }*/
-        //MovieData movieData=intent.getParcelableExtra("extra_text");
         if(movieData.movieId!=null){
             Log.d("DetailActivityFragment","is "+movieData.movieId);
 
@@ -191,6 +161,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             timeTextView.setText(data.getString(COL_MOVIE_TIME));
             ratingTextView.setText(data.getString(COL_MOVIE_RATING));
             overviewTextView.setText(data.getString(COL_MOVIE_OVERVIEW));
+
             File image= new File(data.getString(COL_MOVIE_BACKDROP_PATH));
             Picasso.with(getContext())
                     .load(image)
