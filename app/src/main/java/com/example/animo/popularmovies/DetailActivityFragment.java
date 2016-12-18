@@ -12,6 +12,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,6 +54,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     View rootView;
     ViewGroup container;
     Button button;
+    String[] reviews;
+    ViewGroup reviewContainer;
 
 
     Uri mUri;
@@ -100,10 +103,24 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         View fragmentView=inflater.inflate(R.layout.activity_detail,container,false);
         Log.e(Log_tag,"fragment view "+fragmentView.toString());
 
+
         Log.e("DetailActivity","Name is "+movieData.movieName);
         rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        if(movieData.mTwoPane.equals("false")){
+            Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+            ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        CollapsingToolbarLayout collapsingToolbarLayout=
+                (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
+        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
+        collapsingToolbarLayout.setTitle(movieData.movieName);
+
         Intent intent = getActivity().getIntent();
-        this.container= (ViewGroup) rootView.findViewById(R.id.traler_layout);
+        this.container= (ViewGroup) rootView.findViewById(R.id.trailer_layout);
+        this.reviewContainer= (ViewGroup) rootView.findViewById(R.id.review_layout);
 
         imageView = (ImageView) rootView.findViewById(R.id.movie_image);
         dateTextView = (TextView) rootView.findViewById(R.id.movie_date);
@@ -127,7 +144,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             } else {
                 detailViewTask.execute(""+movieData.movieId);
                 ViewTrailerTask viewTrailerTask=new ViewTrailerTask(this);
+                ReadReviewTask readReviewTask=new ReadReviewTask(this);
                 viewTrailerTask.execute(""+movieData.movieId);
+                readReviewTask.execute(movieData.movieId);
 
             }
         }

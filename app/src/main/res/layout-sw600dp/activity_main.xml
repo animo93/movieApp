@@ -28,59 +28,21 @@
             android:layout_height="match_parent"
             android:layout_weight="3"
             tools:layout="@layout/content_main" />
-
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/scroll_view"
-            android:layout_width="0dp"
-            android:layout_weight="4"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:clipToPadding="false"
-            android:fillViewport="true">
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="4"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-
-                <android.support.design.widget.AppBarLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/detail_backdrop_height"
-                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                    android:fitsSystemWindows="true">
-
-                    <android.support.design.widget.CollapsingToolbarLayout
-                        android:id="@+id/collapsing_toolbar_two_pane"
-                        android:layout_height="match_parent"
-                        android:layout_width="match_parent"
-                        android:fitsSystemWindows="true"
-                        app:contentScrim="?attr/colorPrimary"
-                        app:collapsedTitleTextAppearance="@style/TextAppearance.Movies.Title.Collapsed"
-                        app:expandedTitleTextAppearance="@style/TextAppearance.Movies.Title.Expanded"
-                        app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                        <!--<android.support.v7.widget.Toolbar
-                            android:id="@+id/toolbar"
-                            android:layout_width="match_parent"
-                            android:layout_height="?attr/actionBarSize"
-                            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                            app:layout_collapseMode="pin"/>-->
-                    </android.support.design.widget.CollapsingToolbarLayout>
-
-                </android.support.design.widget.AppBarLayout>
-
-                <!--<include layout="@layout/collapsing_toolbar" ></include>-->
 
                 <FrameLayout
                     android:id="@+id/movie_detail_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-
                 </FrameLayout>
 
             </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
 
     </LinearLayout>
 </LinearLayout>

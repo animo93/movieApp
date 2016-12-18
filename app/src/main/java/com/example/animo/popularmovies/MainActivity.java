@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     private String sortOption;
     private Boolean mTwoPane;
     private static final String DETAIlFRAGMENT_TAG="DFTAG";
-    private CollapsingToolbarLayout collapsingToolbarLayout;
 
     @Override
     protected void onResume() {
@@ -59,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                 Log.e("MainActivity","savedInstanceState is null");
                 DetailActivityFragment detailActivityFragment=new DetailActivityFragment();
                 MovieData movieData=new MovieData(null,null,"true");
-                collapsingToolbarLayout=
-                        (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_two_pane);
 
                 Bundle bundle=new Bundle();
                 bundle.putParcelable("extra_text",movieData);
@@ -115,13 +112,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                     .replace(R.id.movie_detail_container,detailActivityFragment,DETAIlFRAGMENT_TAG)
                     .commit();
 
-            ViewGroup container= (ViewGroup) findViewById(R.id.container);
-            /*View collapsing_layout=getLayoutInflater().inflate(R.layout.collapsing_toolbar,null);*/
-            collapsingToolbarLayout= (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_two_pane);
-            collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Collapsed);
-            collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.TextAppearance_Movies_Title_Expanded);
-            collapsingToolbarLayout.setTitle(movieTitle);
-            container.addView(collapsingToolbarLayout);
         } else {
             Intent intent = new Intent(this,DetailActivity.class).putExtra("extra_text",movieData);
             startActivity(intent);
