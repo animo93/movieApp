@@ -46,5 +46,6 @@ public class MovieData implements Parcelable {
         dest.writeString(movieId);
         dest.writeString(movieName);
         dest.writeString(mTwoPane);
+
     }
 }
