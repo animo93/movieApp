@@ -5,11 +5,10 @@
     tools:context="com.example.animo.popularmovies.MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
-    <GridView
+    <ListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/gridView"
-        android:numColumns="2"
+        android:id="@+id/listView"
         android:columnWidth="50dp"
         android:stretchMode="columnWidth"/>
 </FrameLayout>

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -34,20 +35,18 @@ public class MovieAdapter extends CursorAdapter{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        Log.d("bind view","poster "+cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_PATH));
-        File image=new File(cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_PATH));
         ViewHolder viewHolder= (ViewHolder) view.getTag();
-        Picasso.with(context)
-                .load(image)
-                .into(viewHolder.imageView);
+
 
 
     }
 
     public static class ViewHolder {
-        public final ImageView imageView;
+        public final TextView songName;
+        public final TextView artistName;
         public ViewHolder(View view){
-            imageView= (ImageView) view.findViewById(R.id.imageView);
+            songName= (TextView) view.findViewById(R.id.song_name);
+            artistName= (TextView) view.findViewById(R.id.artist_name);
         }
 
     }
