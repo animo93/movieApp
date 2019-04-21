@@ -2,7 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
+<<<<<<< HEAD
     buildToolsVersion '25.0.0'
+=======
+    buildToolsVersion '26.0.2'
+>>>>>>> 7ee81e757576ed6d6c01abfe9ab00ec7e51b7dbd
 
     defaultConfig {
         applicationId "com.example.animo.popularmovies"
